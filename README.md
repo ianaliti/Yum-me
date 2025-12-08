@@ -1,75 +1,38 @@
-# Nuxt Minimal Starter
+# Yum-me
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Application de découverte de restaurants avec carte interactive.
 
-## Setup
+## Stack
 
-Make sure to install dependencies:
+- Nuxt 4
+- Mapbox GL JS
+- Tailwind CSS
+- Shadcn Vue
+
+## Installation
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+## Configuration
 
-Start the development server on `http://localhost:3000`:
+Créez un fichier `.env` avec vos tokens Mapbox :
+
+```env
+NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.votre_token
+NUXT_PUBLIC_MAPBOX_STYLE_URL=mapbox://styles/username/style-id
+```
+
+## Développement
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+## Fonctionnalités
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- Carte interactive Mapbox avec style custom
+- Géolocalisation automatique
+- Contrôles de navigation (zoom, rotation)
+- Design mobile-first
