@@ -1,23 +1,10 @@
 # Yum-me Restaurant App - Complete Documentation
 
-> 📝 **Quick Links:**
-> - [Database Migration Guide](./DATABASE_MIGRATION.md) - Step-by-step guide for switching to database
-> - Files marked with ⚠️ will need updates when using a database
-
 ## 🏗️ Architecture Overview
 
 ```
 Frontend (Vue) → Pinia Store → Composable → API Call → Server Endpoint → Service Layer → Data Source
 ```
-
-### Key Technologies:
-- **Nuxt 3**: Full-stack Vue framework
-- **Pinia**: Vue's official state management
-- **TypeScript**: Type safety throughout
-- **Tailwind CSS**: Styling
-- **Shadcn Vue**: UI components
-
----
 
 ## 🔄 Data Flow
 
@@ -70,42 +57,32 @@ Yum-me/
 
 ```typescript
 export interface Restaurant {
-  id: string;                    // Unique identifier
-  name: string;                   // Restaurant name
-  cuisine: string;                // Type of cuisine (Italian, Japanese, etc.)
-  rating: number;                // Rating from 0-5
-  priceRange: '$' | '$$' | '$$$' | '$$$$';  // Price level
-  address: string;               // Street address
-  city: string;                  // City name
-  state: string;                 // State abbreviation
-  zipCode: string;               // ZIP code
-  phone: string;                 // Phone number
-  image: string;                 // Image URL
-  description: string;           // Restaurant description
-  dietaryOptions: ('halal' | 'vegan' | 'vegetarian' | ...)[];  // Dietary accommodations
-  hours: {                        // Operating hours
+  id: string;                    
+  name: string;                   
+  cuisine: string;               
+  rating: number;               
+  priceRange: '$' | '$$' | '$$$' | '$$$$';  
+  address: string;               
+  city: string;                  
+  state: string;               
+  zipCode: string;             
+  phone: string;                 
+  image: string;                
+  description: string;           
+  dietaryOptions: ('halal' | 'vegan' | 'vegetarian' | ...)[]; 
+  hours: {                        
     open: string;
     close: string;
   };
-  coordinates: {                  // GPS coordinates
+  coordinates: {                 
     lat: number;
     lng: number;
   };
 }
 ```
 
-**Why it exists**: 
-- Provides type safety across the entire application
-- Ensures all restaurant data follows the same structure
-- Used by both frontend and backend code
-
----
 
 ### 2. Mock Data (`server/data/mockRestaurants.ts`) ⚠️ **FOR DEVELOPMENT ONLY**
-
-**Purpose**: Contains sample restaurant data for development
-
-**⚠️ Database Migration Note**: This file will be deleted or used for seeding when switching to a database.
 
 **Structure**:
 - Exports an array of 6 `Restaurant` objects
@@ -121,20 +98,9 @@ export interface Restaurant {
   rating: 4.5,
   priceRange: '$$',
   dietaryOptions: ['vegetarian', 'gluten-free'],
-  // ... other fields
+  // ... 
 }
 ```
-
-**Why it exists**:
-- Allows development without a database
-- Easy to test filtering and display logic
-- Can be used for database seeding when migrating
-
-**When switching to database**:
-- Delete this file OR keep it for initial data seeding
-- Update `restaurantService.ts` to use database queries instead
-
----
 
 ### 3. Service Layer (`server/services/restaurantService.ts`) 🔄 **UPDATE FOR DATABASE**
 
@@ -176,16 +142,7 @@ export interface RestaurantFilters {
 **3. `getTotalCount()`** - Get total number of restaurants
 - Returns length of mock data array
 
-**Why it exists**:
-- Separates data access from API logic
-- Makes it easy to switch from mock data to database
-- Centralizes filtering logic
-- Can be replaced with database queries without changing API endpoints
-
 **Current Implementation**: Uses mock data from `mockRestaurants.ts`
-
-**Database Implementation**: Replace methods with database queries (Prisma, Drizzle, etc.)
-- See `DATABASE_MIGRATION.md` for detailed migration guide
 
 ---
 
@@ -228,30 +185,8 @@ export interface RestaurantFilters {
 
 **Route**: `GET /api/restaurants/:id`
 
-**How it works**:
-1. Extracts `id` from URL parameter using `getRouterParam()`
-2. Calls `restaurantService.getById(id)`
-3. If restaurant found, returns it
-4. If not found, throws 404 error
-
 **Example Request**:
 - `GET /api/restaurants/1` - Get restaurant with ID "1"
-
-**Response**:
-```json
-{
-  "success": true,
-  "data": { ...restaurant object }
-}
-```
-
-**Error Response** (404):
-```json
-{
-  "statusCode": 404,
-  "statusMessage": "Restaurant not found"
-}
-```
 
 ---
 
@@ -297,14 +232,6 @@ export const useRestaurantStore = defineStore('restaurant', {
 - Actions can be async and directly modify state using `this`
 - Components use `useRestaurantStore()` to access the store
 - Store properties are automatically reactive in Vue components
-
-**Why Pinia**:
-- Vue's official state management library
-- Native Vue reactivity (no wrappers needed)
-- Excellent TypeScript support
-- DevTools integration
-- Simple and intuitive API
-- Better performance than alternatives
 
 ---
 
@@ -353,106 +280,6 @@ return {
 
 ---
 
-### 7. Page Component (`app/pages/index.vue`)
-
-**Purpose**: Main UI that displays restaurants
-
-#### Template Structure:
-
-**1. Header & Button**:
-```vue
-<h1>Restaurants</h1>
-<Button @click="fetchRestaurants" :disabled="loading">
-  {{ loading ? 'Loading...' : 'Fetch Restaurants' }}
-</Button>
-```
-- Title
-- Button to manually fetch restaurants
-- Disabled while loading
-
-**2. Error Display**:
-```vue
-<div v-if="error" class="text-red-500">
-  Error: {{ error }}
-</div>
-```
-- Shows error message if fetch fails
-
-**3. Loading State**:
-```vue
-<div v-if="loading && restaurants.length === 0">
-  Loading restaurants...
-</div>
-```
-- Shows loading message while fetching
-
-**4. Restaurant Grid**:
-```vue
-<div v-else-if="restaurants.length > 0" class="grid ...">
-  <div v-for="restaurant in restaurants" :key="restaurant.id">
-    <!-- Restaurant card -->
-  </div>
-</div>
-```
-- Responsive grid (1 column mobile, 2 tablet, 3 desktop)
-- Displays each restaurant in a card
-- Shows: name, cuisine, price range, rating, address, description
-
-#### Script:
-```typescript
-const { restaurants, loading, error, fetchRestaurants } = useRestaurants();
-```
-- Uses composable to get reactive data
-- All data automatically updates when store changes
-
----
-
-### 8. Nuxt Configuration (`nuxt.config.ts`)
-
-**Purpose**: Configures Nuxt application
-
-#### Key Settings:
-
-**1. Tailwind CSS**:
-```typescript
-vite: {
-  plugins: [tailwindcss()],
-}
-```
-- Enables Tailwind CSS for styling
-
-**2. Pinia**:
-```typescript
-modules: ["@pinia/nuxt", "shadcn-nuxt"],
-```
-- Adds Pinia state management module
-- Auto-configures Pinia for Nuxt
-
-**3. Shadcn Vue**:
-```typescript
-shadcn: {
-  prefix: "",
-  componentDir: "@/components/ui",
-}
-```
-- Adds Shadcn Vue UI component library
-
-**4. Route Rules (Caching)**:
-```typescript
-routeRules: {
-  '/api/restaurants': { 
-    cache: { maxAge: 60 * 5 }  // Cache for 5 minutes
-  },
-  '/api/restaurants/**': { 
-    cache: { maxAge: 60 * 10 }  // Cache for 10 minutes
-  },
-}
-```
-- Caches API responses for better performance
-- List endpoint: 5 minutes
-- Individual restaurant: 10 minutes
-
----
 
 ## 🔗 How It All Works Together
 
@@ -507,162 +334,3 @@ routeRules: {
    - Filters by cuisine: keeps only Italian (1 restaurant)
    - Filters by rating: keeps only 4.0+ (that 1 restaurant has 4.5 ✓)
 4. Returns: 1 Italian restaurant with rating >= 4.0
-
----
-
-## 🗄️ Switching to Database
-
-### Files That Need Changes:
-
-#### ⚠️ **Files to Update:**
-1. **`server/services/restaurantService.ts`** - Replace mock data with database queries
-2. **`server/data/mockRestaurants.ts`** - Delete or keep for seeding
-
-#### ✅ **Files That Stay the Same:**
-- `server/api/restaurants.get.ts` - No changes needed
-- `server/api/restaurants/[id].get.ts` - No changes needed
-- `app/stores/restaurantStore.ts` - No changes needed
-- `app/composables/useRestaurants.ts` - No changes needed
-- `app/pages/index.vue` - No changes needed
-- All other files - No changes needed
-
-### Current Setup (Mock Data):
-```typescript
-// server/services/restaurantService.ts
-export const restaurantService = {
-  async getAll(filters?) {
-    let restaurants = [...mockRestaurants];  // Uses mock data
-    // ... filtering logic
-    return restaurants;
-  }
-}
-```
-
-### Migration Steps:
-
-**1. Install database library** (e.g., Prisma, Drizzle, or raw SQL):
-```bash
-npm install prisma @prisma/client
-npx prisma init
-```
-
-**2. Update `server/services/restaurantService.ts`**:
-```typescript
-// Replace mock imports with database client
-import { prisma } from '~/server/db';
-
-export const restaurantService = {
-  async getAll(filters?: RestaurantFilters): Promise<Restaurant[]> {
-    const where: any = {};
-    
-    if (filters?.cuisine) {
-      where.cuisine = { equals: filters.cuisine, mode: 'insensitive' };
-    }
-    
-    if (filters?.dietaryOption) {
-      where.dietaryOptions = { has: filters.dietaryOption };
-    }
-    
-    if (filters?.priceRange) {
-      where.priceRange = filters.priceRange;
-    }
-    
-    if (filters?.minRating !== undefined) {
-      where.rating = { gte: filters.minRating };
-    }
-    
-    if (filters?.city) {
-      where.city = { equals: filters.city, mode: 'insensitive' };
-    }
-    
-    const restaurants = await prisma.restaurant.findMany({
-      where,
-      take: filters?.limit,
-    });
-    
-    return restaurants;
-  },
-
-  async getById(id: string): Promise<Restaurant | null> {
-    return await prisma.restaurant.findUnique({
-      where: { id },
-    });
-  },
-
-  async getTotalCount(): Promise<number> {
-    return await prisma.restaurant.count();
-  },
-};
-```
-
-**3. (Optional) Delete mock data**:
-```bash
-rm server/data/mockRestaurants.ts
-```
-
-**4. That's it!**
-- ✅ API endpoints work automatically
-- ✅ Store works automatically
-- ✅ Components work automatically
-- ✅ Only 1-2 files changed!
-
-**📝 See `DATABASE_MIGRATION.md` for detailed migration guide**
-
----
-
-## 🎯 Key Concepts
-
-### 1. Separation of Concerns
-- **Frontend**: UI and user interaction
-- **Store**: State management
-- **API**: Request/response handling
-- **Service**: Business logic
-- **Data**: Data source (mock or database)
-
-### 2. Reactivity Chain
-```
-Pinia Store → Composable Computed Properties → Component Template
-```
-(Pinia stores are natively reactive - no subscriptions needed!)
-
-### 3. Type Safety
-- TypeScript interfaces ensure data consistency
-- `Restaurant` interface used everywhere
-- Prevents bugs from incorrect data structures
-
-### 4. Error Handling
-- API endpoints catch errors and return proper status codes
-- Store catches fetch errors and sets error state
-- UI displays error messages to user
-
-### 5. Performance
-- Route rules cache API responses
-- Service layer can be optimized with database indexes
-- Vue's reactivity only updates changed parts
-
----
-
-## 📝 Summary
-
-This application demonstrates:
-- ✅ Clean architecture with separation of concerns
-- ✅ Type-safe TypeScript throughout
-- ✅ Reactive state management with Pinia (Vue's official state management)
-- ✅ Server-side API with filtering capabilities
-- ✅ Easy transition from mock data to database (only 1-2 files need changes!)
-- ✅ Modern Nuxt 3 full-stack patterns
-
-### Key Features:
-- **Simple**: Minimal code, easy to understand
-- **Maintainable**: Clear separation of concerns
-- **Scalable**: Ready for database integration
-- **Type-Safe**: TypeScript throughout
-- **Reactive**: Native Vue reactivity with Pinia
-
-### Database Migration:
-- **Only 1-2 files need changes** when switching to database
-- All other files stay the same
-- See `DATABASE_MIGRATION.md` for detailed guide
-
-The code is simple, maintainable, and ready to scale when you add a real database!
-
