@@ -1,18 +1,4 @@
-/**
- * ⚠️ MOCK DATA - FOR DEVELOPMENT ONLY
- * 
- * This file contains mock restaurant data for development and testing.
- * 
- * 🔄 WHEN SWITCHING TO DATABASE:
- * - This file can be DELETED or kept for seeding/initial data
- * - Replace all imports of `mockRestaurants` with database queries
- * - Update `server/services/restaurantService.ts` to use database instead
- * 
- * 📝 Current Usage:
- * - Used by: server/services/restaurantService.ts
- * - Will be replaced by: Database queries (Prisma, Drizzle, etc.)
- */
-
+// Mock data - replace with database when ready
 import type { Restaurant } from '../../app/types/restaurant';
 
 export const mockRestaurants: Restaurant[] = [

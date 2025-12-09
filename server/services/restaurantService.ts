@@ -12,48 +12,45 @@ export interface RestaurantFilters {
 
 export const restaurantService = {
   async getAll(filters?: RestaurantFilters): Promise<Restaurant[]> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    let restaurants: Restaurant[] = [...mockRestaurants];
+    let results = [...mockRestaurants];
 
     if (filters?.cuisine) {
-      restaurants = restaurants.filter(
-        (r) => r.cuisine.toLowerCase() === filters.cuisine!.toLowerCase()
-      );
+      const cuisine = filters.cuisine.toLowerCase();
+      results = results.filter(r => r.cuisine.toLowerCase() === cuisine);
     }
 
     if (filters?.dietaryOption) {
-      restaurants = restaurants.filter((r) =>
-        r.dietaryOptions.includes(
-          filters.dietaryOption!.toLowerCase() as Restaurant['dietaryOptions'][number]
-        )
+      const option = filters.dietaryOption.toLowerCase();
+      results = results.filter(r => 
+        r.dietaryOptions.some(d => d.toLowerCase() === option)
       );
     }
 
     if (filters?.priceRange) {
-      restaurants = restaurants.filter((r) => r.priceRange === filters.priceRange);
+      results = results.filter(r => r.priceRange === filters.priceRange);
     }
 
     if (filters?.minRating !== undefined) {
-      restaurants = restaurants.filter((r) => r.rating >= filters.minRating!);
+      results = results.filter(r => r.rating >= filters.minRating!);
     }
 
     if (filters?.city) {
-      restaurants = restaurants.filter(
-        (r) => r.city.toLowerCase() === filters.city!.toLowerCase()
-      );
+      const city = filters.city.toLowerCase();
+      results = results.filter(r => r.city.toLowerCase() === city);
     }
 
     if (filters?.limit && filters.limit > 0) {
-      restaurants = restaurants.slice(0, filters.limit);
+      results = results.slice(0, filters.limit);
     }
 
-    return restaurants;
+    return results;
   },
 
   async getById(id: string): Promise<Restaurant | null> {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return mockRestaurants.find((r) => r.id === id) || null;
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return mockRestaurants.find(r => r.id === id) ?? null;
   },
 
   async getTotalCount(): Promise<number> {

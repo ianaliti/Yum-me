@@ -5,7 +5,7 @@ export const useRestaurants = () => {
   const store = useRestaurantStore();
 
   onMounted(() => {
-    if (store.restaurants.length === 0 && !store.loading) {
+    if (!store.restaurants.length && !store.loading) {
       store.fetchRestaurants();
     }
   });
@@ -14,7 +14,7 @@ export const useRestaurants = () => {
     restaurants: computed(() => store.restaurants),
     loading: computed(() => store.loading),
     error: computed(() => store.error),
-    fetchRestaurants: () => store.fetchRestaurants(),
+    fetchRestaurants: store.fetchRestaurants,
   };
 };
 
