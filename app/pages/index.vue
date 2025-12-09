@@ -119,38 +119,6 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD
-
-const { mapReady, mapOptions, getUserPosition, activateGeolocateControl } =
-  useGeolocation();
-
-// Simulation de restaurants depuis une base de données
-const restaurants = ref([
-  {
-    id: 1,
-    name: "Restaurant Annecy",
-    coordinates: [6.1294, 45.8992],
-    color: "#ef4444",
-  },
-  {
-    id: 2,
-    name: "Restaurant Poissy",
-    coordinates: [2.0494, 48.9283],
-    color: "#3b82f6",
-  },
-]);
-
-onMounted(() => {
-  getUserPosition();
-});
-
-useHead({
-  title: "Yum-me",
-  meta: [
-    { name: "description", content: "Découvrez les meilleurs restaurants" },
-  ],
-});
-=======
 const {
   currentStep,
   totalSteps,
@@ -160,5 +128,4 @@ const {
   goToStep,
   skipOnboarding,
 } = useOnboarding();
->>>>>>> 5c0c87a (Fonctionnalité : Introduction d’un parcours d’intégration avec chargement de la localisation et indicateurs d’étape, transformation de la page d’accueil et ajout d’un nouveau logo.)
 </script>
