@@ -12,21 +12,18 @@ export const useRestaurantStore = defineStore('restaurant', {
     async fetchRestaurants() {
       this.loading = true;
       this.error = null;
+      
       try {
-        const response = await $fetch<{
-          success: boolean;
-          data: Restaurant[];
-        }>('/api/restaurants');
-
-        if (response.success) {
-          this.restaurants = response.data;
-          this.loading = false;
+        const res = await $fetch('/api/restaurants');
+        
+        if (res.success) {
+          this.restaurants = res.data;
         } else {
           this.error = 'Failed to fetch restaurants';
-          this.loading = false;
         }
-      } catch (error) {
-        this.error = error instanceof Error ? error.message : 'An error occurred';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Something went wrong';
+      } finally {
         this.loading = false;
       }
     },

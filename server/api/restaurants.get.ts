@@ -2,23 +2,37 @@ import { restaurantService } from '../services/restaurantService';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
+  const filters: any = {};
 
-  const filters = {
-    cuisine: query.cuisine && typeof query.cuisine === 'string' ? query.cuisine : undefined,
-    dietaryOption: query.dietaryOption && typeof query.dietaryOption === 'string' ? query.dietaryOption : undefined,
-    priceRange: query.priceRange && typeof query.priceRange === 'string' && ['$', '$$', '$$$', '$$$$'].includes(query.priceRange) 
-      ? query.priceRange as any 
-      : undefined,
-    minRating: query.minRating ? (() => {
-      const num = parseFloat(query.minRating as string);
-      return !isNaN(num) ? num : undefined;
-    })() : undefined,
-    city: query.city && typeof query.city === 'string' ? query.city : undefined,
-    limit: query.limit ? (() => {
-      const num = parseInt(query.limit as string, 10);
-      return !isNaN(num) && num > 0 ? num : undefined;
-    })() : undefined,
-  };
+  if (typeof query.cuisine === 'string') {
+    filters.cuisine = query.cuisine;
+  }
+
+  if (typeof query.dietaryOption === 'string') {
+    filters.dietaryOption = query.dietaryOption;
+  }
+
+  if (typeof query.priceRange === 'string' && ['$', '$$', '$$$', '$$$$'].includes(query.priceRange)) {
+    filters.priceRange = query.priceRange;
+  }
+
+  if (query.minRating) {
+    const rating = parseFloat(query.minRating as string);
+    if (!isNaN(rating)) {
+      filters.minRating = rating;
+    }
+  }
+
+  if (typeof query.city === 'string') {
+    filters.city = query.city;
+  }
+
+  if (query.limit) {
+    const limit = parseInt(query.limit as string, 10);
+    if (!isNaN(limit) && limit > 0) {
+      filters.limit = limit;
+    }
+  }
 
   const restaurants = await restaurantService.getAll(filters);
   const total = await restaurantService.getTotalCount();
