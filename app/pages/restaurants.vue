@@ -27,7 +27,7 @@
           :key="restaurant.id"
           :marker-id="`marker-${restaurant.id}`"
           :lnglat="restaurant.coordinates"
-          :options="{ color: restaurant.color }"
+          :options="{ element: restaurant.element }"
         />
       </MapboxMap>
     </main>
@@ -43,21 +43,44 @@ definePageMeta({
 const { mapReady, mapOptions, getUserPosition, activateGeolocateControl } =
   useGeolocation();
 
-// Simulation de restaurants depuis une base de données
-const restaurants = ref([
-  {
-    id: 1,
-    name: "Restaurant Annecy",
-    coordinates: [6.1294, 45.8992],
-    color: "#379287",
-  },
-  {
-    id: 2,
-    name: "Restaurant Poissy",
-    coordinates: [2.0494, 48.9283],
-    color: "#379287",
-  },
-]);
+// Charger les restaurants depuis l'API
+const { restaurants: apiRestaurants, loading, error } = useRestaurants();
+
+// Créer un élément image pour le marker custom
+const createCustomMarkerElement = () => {
+  const wrapper = document.createElement('div');
+  wrapper.style.width = '32px';
+  wrapper.style.height = '32px';
+  wrapper.style.cursor = 'pointer';
+
+  const img = document.createElement('img');
+  img.src = '/markers/restaurant-marker.png';
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.display = 'block';
+  img.style.transition = 'transform 0.2s ease';
+
+  wrapper.appendChild(img);
+
+  wrapper.addEventListener('mouseenter', () => {
+    img.style.transform = 'scale(1.15)';
+  });
+  wrapper.addEventListener('mouseleave', () => {
+    img.style.transform = 'scale(1)';
+  });
+
+  return wrapper;
+};
+
+// Transformer les restaurants pour la carte Mapbox
+const restaurants = computed(() => {
+  return apiRestaurants.value.map((restaurant) => ({
+    id: restaurant.id,
+    name: restaurant.name,
+    coordinates: [restaurant.coordinates.lng, restaurant.coordinates.lat] as [number, number],
+    element: createCustomMarkerElement(),
+  }));
+});
 
 // Demander la position au chargement
 onMounted(() => {
