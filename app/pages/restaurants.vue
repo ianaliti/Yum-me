@@ -2,22 +2,20 @@
   <div class="flex flex-col h-screen w-full">
     <!-- Map Container -->
     <main class="flex-1 relative overflow-hidden">
-      <!-- Loader pendant la géolocalisation -->
-      <OnboardingLocationLoader v-if="!mapReady" />
-
       <!-- Map -->
       <MapboxMap
-        v-else
+        v-if="mapReady"
         map-id="mainMap"
         :options="mapOptions"
-        @load="activateGeolocateControl"
+        @load="onMapLoad"
         class="w-full h-full"
       >
-        <MapboxNavigationControl position="top-right" />
+        <!-- Mapbox Controls -->
+        <!-- <MapboxNavigationControl position="top-right" /> -->
 
-        <!-- Control de géolocalisation -->
+        <!-- Geolocate Control pour afficher le point bleu -->
         <MapboxGeolocateControl
-          position="top-right"
+          position="bottom-right"
           :track-user-location="true"
           :show-user-location="true"
         />
@@ -31,6 +29,18 @@
         />
       </MapboxMap>
 
+      <!-- Custom Search Bar -->
+      <div v-if="mapReady" class="absolute top-4 left-0 right-0 z-10">
+        <MapSearchBar
+          v-model="searchQuery"
+          :show-filters="true"
+          :show-settings="false"
+          @filter="handleFilterClick"
+          @focus="handleSearchFocus"
+          @submit="handleSearchSubmit"
+        />
+      </div>
+
       <!-- Bottom Sheet -->
       <RestaurantBottomSheet />
     </main>
@@ -42,13 +52,57 @@ definePageMeta({
   layout: "app",
 });
 
-// Utiliser le composable de géolocalisation
-const { mapReady, mapOptions, getUserPosition, activateGeolocateControl } =
-  useGeolocation();
-
-// Charger les restaurants depuis l'API
-const { restaurants: apiRestaurants, loading, error } = useRestaurants();
+// Utiliser les stores directement pour un meilleur contrôle du cache
+const geolocationStore = useGeolocationStore();
+const restaurantStore = useRestaurantStore();
 const { openSheet } = useRestaurantSheet();
+
+// Utiliser le composable pour les options de la map
+const { mapOptions, activateGeolocateControl } = useGeolocation();
+
+// Computed properties pour les restaurants et le chargement
+const apiRestaurants = computed(() => restaurantStore.restaurants);
+const loading = computed(() => restaurantStore.loading);
+const error = computed(() => restaurantStore.error);
+const mapReady = computed(() => geolocationStore.mapReady);
+
+// Search
+const searchQuery = ref("");
+const config = useRuntimeConfig();
+const mapInstance = ref<any>(null);
+
+const handleFilterClick = () => {
+  // TODO: Ouvrir le panel de filtres
+};
+
+const handleSearchFocus = () => {
+  // TODO: Afficher les suggestions
+};
+
+const handleSearchSubmit = async (query: string) => {
+  try {
+    const mapboxToken = config.public.mapboxAccessToken;
+    const response = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxToken}&types=place,locality&limit=1`
+    );
+    const data = await response.json();
+
+    if (data.features && data.features.length > 0) {
+      const [lng, lat] = data.features[0].center;
+
+      // Déplacer la carte vers la ville trouvée avec zoom plus puissant
+      if (mapInstance.value) {
+        mapInstance.value.flyTo({
+          center: [lng, lat],
+          zoom: 14,
+          duration: 2000,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Erreur de géocodage:", error);
+  }
+};
 
 // Créer un élément image pour le marker custom
 const createCustomMarkerElement = (restaurant: any) => {
@@ -95,9 +149,19 @@ const restaurants = computed(() => {
   }));
 });
 
+// Map load handler
+const onMapLoad = (map: any) => {
+  mapInstance.value = map;
+  activateGeolocateControl(map);
+};
+
 // Demander la position au chargement
-onMounted(() => {
-  getUserPosition();
+onMounted(async () => {
+  // Charger les données depuis le cache ou l'API
+  await Promise.all([
+    geolocationStore.getUserPosition(),
+    restaurantStore.fetchRestaurants(),
+  ]);
 });
 
 useHead({

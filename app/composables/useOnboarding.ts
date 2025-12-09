@@ -13,7 +13,12 @@ export const useOnboarding = () => {
 
   const steps: OnboardingStep[] = [
     {
-      title: "Les meilleures adresses",
+      title: "Bienvenue sur Yum'me !",
+      description:
+        "L'app qui trouve instantanément les restaurants adaptés à ton alimentation.",
+    },
+    {
+      title: "Vos bonnes adresses",
       description:
         "Yum'me vous aide à trouver facilement des restaurants, compatibles avec votre alimentation et votre style de vie.",
     },
@@ -55,12 +60,34 @@ export const useOnboarding = () => {
   const completeOnboarding = async () => {
     isLoadingLocation.value = true;
 
-    // Simulate location loading with a nice transition
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const startTime = Date.now();
+    const MIN_LOADING_TIME = 2000; // 2 secondes minimum
+
+    // Précharger les données en parallèle
+    const geolocationStore = useGeolocationStore();
+    const restaurantStore = useRestaurantStore();
+
+    try {
+      // Lancer la géolocalisation et le chargement des restaurants en parallèle
+      await Promise.all([
+        geolocationStore.getUserPosition(),
+        restaurantStore.fetchRestaurants(),
+      ]);
+
+      // Attendre au minimum 2 secondes depuis le début
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
+
+      if (remainingTime > 0) {
+        await new Promise((resolve) => setTimeout(resolve, remainingTime));
+      }
+    } catch (error) {
+      console.error('Error preloading data:', error);
+    }
 
     hasCompletedOnboarding.value = true;
     isLoadingLocation.value = false;
-    navigateTo("/restaurants");
+    navigateTo("/accueil");
   };
 
   const goToStep = (step: number) => {

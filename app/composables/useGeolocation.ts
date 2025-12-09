@@ -1,35 +1,15 @@
 export const useGeolocation = () => {
   const config = useRuntimeConfig();
-  const mapReady = ref(false);
-  const mapOptions = ref({
-    style: config.public.mapboxStyleUrl || "mapbox://styles/mapbox/streets-v12",
-    center: [6.1294, 45.8992] as [number, number],
-    zoom: 15,
-  });
+  const store = useGeolocationStore();
 
-  const getUserPosition = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          mapOptions.value.center = [
-            position.coords.longitude,
-            position.coords.latitude,
-          ];
-          mapReady.value = true;
-        },
-        (error) => {
-          console.warn("Géolocalisation refusée:", error);
-          mapReady.value = true;
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        }
-      );
-    } else {
-      mapReady.value = true;
-    }
+  const mapOptions = computed(() => ({
+    style: config.public.mapboxStyleUrl || "mapbox://styles/mapbox/streets-v12",
+    center: store.center,
+    zoom: 15,
+  }));
+
+  const getUserPosition = async () => {
+    await store.getUserPosition();
   };
 
   const activateGeolocateControl = (map: any) => {
@@ -44,7 +24,7 @@ export const useGeolocation = () => {
   };
 
   return {
-    mapReady,
+    mapReady: computed(() => store.mapReady),
     mapOptions,
     getUserPosition,
     activateGeolocateControl,

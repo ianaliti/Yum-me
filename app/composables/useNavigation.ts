@@ -13,7 +13,7 @@ export const useNavigation = () => {
       name: 'home',
       label: 'Accueil',
       icon: 'IconHome',
-      path: '/',
+      path: '/accueil',
     },
     {
       name: 'restaurants',

@@ -14,7 +14,7 @@
           <component
             :is="getIconComponent(item.icon)"
             :size="24"
-            :color="isActive(item.path) ? '#379287' : '#6B7280'"
+            :color="isActive(item.path) ? '#F9C846' : '#003459'"
             class="transition-colors"
           />
 
