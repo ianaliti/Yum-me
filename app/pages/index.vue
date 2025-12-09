@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+
 const { mapReady, mapOptions, getUserPosition, activateGeolocateControl } =
   useGeolocation();
 

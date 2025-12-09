@@ -7,24 +7,20 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  modules: ["shadcn-nuxt", "nuxt-mapbox"],
+  modules: ["@pinia/nuxt", "shadcn-nuxt", "nuxt-mapbox"],
   mapbox: {
     accessToken: process.env.NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "",
   },
   shadcn: {
-    /**
-     * Prefix for all the imported component.
-     * @default "Ui"
-     */
     prefix: "",
-    /**
-     * Directory that the component lives in.
-     * Will respect the Nuxt aliases.
-     * @link https://nuxt.com/docs/api/nuxt-config#alias
-     * @default "@/components/ui"
-     */
     componentDir: "@/components/ui",
   },
+  routeRules: {
+    '/api/restaurants': { 
+      cache: { maxAge: 60 * 5 }
+    },
+    '/api/restaurants/**': { 
+      cache: { maxAge: 60 * 10 }
   runtimeConfig: {
     public: {
       mapboxAccessToken: process.env.NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "",
