@@ -30,6 +30,9 @@
           :options="{ element: restaurant.element }"
         />
       </MapboxMap>
+
+      <!-- Bottom Sheet -->
+      <RestaurantBottomSheet />
     </main>
   </div>
 </template>
@@ -45,28 +48,35 @@ const { mapReady, mapOptions, getUserPosition, activateGeolocateControl } =
 
 // Charger les restaurants depuis l'API
 const { restaurants: apiRestaurants, loading, error } = useRestaurants();
+const { openSheet } = useRestaurantSheet();
 
 // Créer un élément image pour le marker custom
-const createCustomMarkerElement = () => {
-  const wrapper = document.createElement('div');
-  wrapper.style.width = '32px';
-  wrapper.style.height = '32px';
-  wrapper.style.cursor = 'pointer';
+const createCustomMarkerElement = (restaurant: any) => {
+  const wrapper = document.createElement("div");
+  wrapper.style.width = "28px";
+  wrapper.style.height = "28px";
+  wrapper.style.cursor = "pointer";
 
-  const img = document.createElement('img');
-  img.src = '/markers/restaurant-marker.png';
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.display = 'block';
-  img.style.transition = 'transform 0.2s ease';
+  const img = document.createElement("img");
+  img.src = "/markers/restaurant-marker.png";
+  img.style.width = "100%";
+  img.style.height = "100%";
+  img.style.display = "block";
+  img.style.transition = "transform 0.2s ease";
 
   wrapper.appendChild(img);
 
-  wrapper.addEventListener('mouseenter', () => {
-    img.style.transform = 'scale(1.15)';
+  // Hover effect
+  wrapper.addEventListener("mouseenter", () => {
+    img.style.transform = "scale(1.15)";
   });
-  wrapper.addEventListener('mouseleave', () => {
-    img.style.transform = 'scale(1)';
+  wrapper.addEventListener("mouseleave", () => {
+    img.style.transform = "scale(1)";
+  });
+
+  // Click to open sheet
+  wrapper.addEventListener("click", () => {
+    openSheet(restaurant);
   });
 
   return wrapper;
@@ -77,8 +87,11 @@ const restaurants = computed(() => {
   return apiRestaurants.value.map((restaurant) => ({
     id: restaurant.id,
     name: restaurant.name,
-    coordinates: [restaurant.coordinates.lng, restaurant.coordinates.lat] as [number, number],
-    element: createCustomMarkerElement(),
+    coordinates: [restaurant.coordinates.lng, restaurant.coordinates.lat] as [
+      number,
+      number
+    ],
+    element: createCustomMarkerElement(restaurant),
   }));
 });
 
