@@ -9,7 +9,14 @@ export const useOnboarding = () => {
     "onboarding-completed",
     () => false
   );
-  const isLoadingLocation = useState<boolean>("is-loading-location", () => false);
+  const isLoadingLocation = useState<boolean>(
+    "is-loading-location",
+    () => false
+  );
+  const isLoadingComplete = useState<boolean>(
+    "is-loading-complete",
+    () => false
+  );
 
   const steps: OnboardingStep[] = [
     {
@@ -18,19 +25,21 @@ export const useOnboarding = () => {
         "L'app qui trouve instantanément les restaurants adaptés à ton alimentation.",
     },
     {
-      title: "Vos bonnes adresses",
+      title: "Marre de chercher un restaurant ?",
       description:
-        "Yum'me vous aide à trouver facilement des restaurants, compatibles avec votre alimentation et votre style de vie.",
+        "Qui respecte tes habitudes alimentaires ? Yum'me le trouve pour toi. Simplement.",
     },
     {
-      title: "Découvrez autour de vous",
-      description:
-        "Explorez les meilleurs restaurants près de chez vous, adaptés à vos préférences alimentaires.",
+      title: "Dis-nous ce que tu manges, on s'occupe du reste !",
+      description: "",
     },
     {
-      title: "Partagez vos découvertes",
-      description:
-        "Sauvegardez vos adresses préférées et partagez-les avec vos proches.",
+      title: "Dites-nous en plus sur vos besoins particuliers",
+      description: "",
+    },
+    {
+      title: "Pour te proposer les restaurants les plus proches, Yum'me a besoin d'accéder à ta position.",
+      description: "",
     },
   ];
 
@@ -59,6 +68,7 @@ export const useOnboarding = () => {
 
   const completeOnboarding = async () => {
     isLoadingLocation.value = true;
+    isLoadingComplete.value = false;
 
     const startTime = Date.now();
     const MIN_LOADING_TIME = 2000; // 2 secondes minimum
@@ -82,12 +92,12 @@ export const useOnboarding = () => {
         await new Promise((resolve) => setTimeout(resolve, remainingTime));
       }
     } catch (error) {
-      console.error('Error preloading data:', error);
+      console.error("Error preloading data:", error);
     }
 
     hasCompletedOnboarding.value = true;
-    isLoadingLocation.value = false;
-    navigateTo("/accueil");
+    isLoadingComplete.value = true;
+    // On ne navigue plus automatiquement - l'utilisateur clique sur le bouton
   };
 
   const goToStep = (step: number) => {
@@ -99,12 +109,15 @@ export const useOnboarding = () => {
   const resetOnboarding = () => {
     currentStep.value = 0;
     hasCompletedOnboarding.value = false;
+    isLoadingLocation.value = false;
+    isLoadingComplete.value = false;
   };
 
   return {
     currentStep,
     hasCompletedOnboarding,
     isLoadingLocation,
+    isLoadingComplete,
     steps,
     totalSteps,
     isFirstStep,
