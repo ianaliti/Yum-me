@@ -2,7 +2,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
+  devtools: { enabled: false }, // Désactivé : cause des problèmes de perf avec Mapbox
+  ssr: false,
   css: ["~/assets/css/main.css", "mapbox-gl/dist/mapbox-gl.css"],
   vite: {
     plugins: [tailwindcss()],

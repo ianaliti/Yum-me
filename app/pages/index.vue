@@ -29,7 +29,9 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col items-center justify-between px-6 py-12 max-w-2xl mx-auto w-full">
+    <div
+      class="flex-1 flex flex-col items-center justify-between px-6 py-12 max-w-2xl mx-auto w-full"
+    >
       <!-- Logo and Content -->
       <div class="flex flex-col items-center justify-center flex-1 space-y-12">
         <!-- Logo -->
@@ -38,11 +40,11 @@
             src="/logo.svg"
             alt="Yum'me logo"
             class="w-full h-full object-contain"
-          >
+          />
         </div>
 
         <!-- Title and Description with transition -->
-        <div class="min-h-[16rem] flex items-center justify-center">
+        <div class="min-h-64 flex items-center justify-center">
           <Transition
             mode="out-in"
             enter-active-class="transition-all duration-300 ease-out"
@@ -60,15 +62,17 @@
               <h1 class="text-4xl font-bold">
                 <span class="inline-block">
                   <span class="text-foreground">
-                    {{ currentStepData.title.split(' ')[0] }}
+                    {{ currentStepData.title.split(" ")[0] }}
                   </span>
-                  {{ ' ' }}
+                  {{ " " }}
                   <span class="text-accent">
-                    {{ currentStepData.title.split(' ').slice(1).join(' ') }}
+                    {{ currentStepData.title.split(" ").slice(1).join(" ") }}
                   </span>
                 </span>
               </h1>
-              <p class="text-lg text-foreground/70 leading-relaxed max-w-md mx-auto">
+              <p
+                class="text-lg text-foreground/70 leading-relaxed max-w-md mx-auto"
+              >
                 {{ currentStepData.description }}
               </p>
             </div>
@@ -158,4 +162,3 @@ const {
 } = useOnboarding();
 >>>>>>> 5c0c87a (Fonctionnalité : Introduction d’un parcours d’intégration avec chargement de la localisation et indicateurs d’étape, transformation de la page d’accueil et ajout d’un nouveau logo.)
 </script>
-

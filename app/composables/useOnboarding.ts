@@ -60,7 +60,7 @@ export const useOnboarding = () => {
 
     hasCompletedOnboarding.value = true;
     isLoadingLocation.value = false;
-    navigateTo("/map");
+    navigateTo("/restaurants");
   };
 
   const goToStep = (step: number) => {
