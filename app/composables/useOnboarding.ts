@@ -17,6 +17,8 @@ export const useOnboarding = () => {
     "is-loading-complete",
     () => false
   );
+  const dietaryPreferences = useState<string[]>("dietary-preferences", () => []);
+  const specialNeeds = useState<string[]>("special-needs", () => []);
 
   const steps: OnboardingStep[] = [
     {
@@ -118,6 +120,8 @@ export const useOnboarding = () => {
     hasCompletedOnboarding,
     isLoadingLocation,
     isLoadingComplete,
+    dietaryPreferences,
+    specialNeeds,
     steps,
     totalSteps,
     isFirstStep,

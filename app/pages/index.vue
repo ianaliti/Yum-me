@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Loading Screen -->
-    <OnboardingLocationLoader
+    <OnboardingLoader
       v-if="isLoadingLocation"
       :is-ready="isLoadingComplete"
     />
@@ -18,7 +18,7 @@
     >
       <!-- Skip Button - Top Right (hidden on Step 1) -->
       <div v-if="currentStep > 0" class="absolute top-6 right-6 z-10">
-        <Button variant="ghost" @click="skipOnboarding">Passer</Button>
+        <Button variant="ghost" @click="handleNextStep">Passer</Button>
       </div>
 
       <!-- Main Content -->
@@ -64,6 +64,7 @@
             size="xl"
             variant="secondary"
             class="w-full"
+            :disabled="isNextButtonDisabled"
             @click="handleNextStep"
           >
             {{ currentStep === 4 ? "Activer la localisation" : "Suivant" }}
@@ -86,10 +87,25 @@ const {
   totalSteps,
   isLoadingLocation,
   isLoadingComplete,
+  dietaryPreferences,
+  specialNeeds,
   goToStep,
   skipOnboarding,
   nextStep,
 } = useOnboarding();
+
+// Disable button if on step 3 or 4 and no tags selected
+const isNextButtonDisabled = computed(() => {
+  if (currentStep.value === 2) {
+    // Step 3 (diet preferences)
+    return dietaryPreferences.value.length === 0;
+  }
+  if (currentStep.value === 3) {
+    // Step 4 (special needs)
+    return specialNeeds.value.length === 0;
+  }
+  return false;
+});
 
 // Map of step components
 const stepComponents = [

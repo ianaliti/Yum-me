@@ -33,7 +33,7 @@
           v-for="tag in dietTags"
           :key="tag"
           :label="tag"
-          :isSelected="selectedTags.includes(tag)"
+          :isSelected="dietaryPreferences.includes(tag)"
           @toggle="toggleTag(tag)"
         />
       </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-const selectedTags = ref<string[]>([]);
+const { dietaryPreferences } = useOnboarding();
 
 const dietTags = [
   "Végétarien",
@@ -61,11 +61,11 @@ const dietTags = [
 ];
 
 const toggleTag = (tag: string) => {
-  const index = selectedTags.value.indexOf(tag);
+  const index = dietaryPreferences.value.indexOf(tag);
   if (index > -1) {
-    selectedTags.value.splice(index, 1);
+    dietaryPreferences.value.splice(index, 1);
   } else {
-    selectedTags.value.push(tag);
+    dietaryPreferences.value.push(tag);
   }
 };
 </script>

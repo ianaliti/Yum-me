@@ -33,7 +33,7 @@
           v-for="tag in specialNeedsTags"
           :key="tag"
           :label="tag"
-          :isSelected="selectedTags.includes(tag)"
+          :isSelected="specialNeeds.includes(tag)"
           @toggle="toggleTag(tag)"
         />
       </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-const selectedTags = ref<string[]>([]);
+const { specialNeeds } = useOnboarding();
 
 const specialNeedsTags = [
   "Poussettes",
@@ -61,11 +61,11 @@ const specialNeedsTags = [
 ];
 
 const toggleTag = (tag: string) => {
-  const index = selectedTags.value.indexOf(tag);
+  const index = specialNeeds.value.indexOf(tag);
   if (index > -1) {
-    selectedTags.value.splice(index, 1);
+    specialNeeds.value.splice(index, 1);
   } else {
-    selectedTags.value.push(tag);
+    specialNeeds.value.push(tag);
   }
 };
 </script>
