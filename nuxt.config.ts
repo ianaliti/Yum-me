@@ -2,7 +2,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
+  devtools: { enabled: false }, // Désactivé : cause des problèmes de perf avec Mapbox
+  ssr: false,
   css: ["~/assets/css/main.css", "mapbox-gl/dist/mapbox-gl.css"],
   vite: {
     plugins: [tailwindcss()],
@@ -16,11 +17,13 @@ export default defineNuxtConfig({
     componentDir: "@/components/ui",
   },
   routeRules: {
-    '/api/restaurants': { 
+    '/api/restaurants': {
       cache: { maxAge: 60 * 5 }
     },
-    '/api/restaurants/**': { 
+    '/api/restaurants/**': {
       cache: { maxAge: 60 * 10 }
+    }
+  },
   runtimeConfig: {
     public: {
       mapboxAccessToken: process.env.NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "",
