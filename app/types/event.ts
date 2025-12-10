@@ -17,7 +17,7 @@ export interface EventGroup {
   title: string;
   description: string;
   code: string;
-  color: 'red' | 'blue' | 'green' | 'purple' | 'orange' | 'pink';
+  color: "red" | "blue" | "green" | "purple" | "orange" | "pink";
   participants: EventParticipant[];
   createdAt: string;
   createdBy: string;
@@ -33,10 +33,10 @@ export interface User {
 
 // Couleurs des cartes de groupe
 export const eventGroupColors = {
-  red: 'bg-red-600',
-  blue: 'bg-blue-500',
-  green: 'bg-green-600',
-  purple: 'bg-purple-600',
-  orange: 'bg-orange-500',
-  pink: 'bg-pink-500',
+  red: "bg-red-700/85",
+  blue: "bg-blue-700/85",
+  green: "bg-green-700/85",
+  purple: "bg-purple-700/85",
+  orange: "bg-orange-700/85",
+  pink: "bg-pink-700/85",
 } as const;

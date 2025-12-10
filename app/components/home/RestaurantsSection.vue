@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4 pt-4">
+  <section class="space-y-4 pt-4 pb-24">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h2 class="text-2xl font-bold text-[#003459]">Ici, on te respecte</h2>

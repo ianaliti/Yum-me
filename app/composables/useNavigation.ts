@@ -36,7 +36,8 @@ export const useNavigation = () => {
   ];
 
   const isActive = (path: string) => {
-    return route.path === path;
+    // Pour les sous-routes (ex: /events/join), on vérifie si le path commence par le path parent
+    return route.path.startsWith(path);
   };
 
   return {

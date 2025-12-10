@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'rounded-3xl p-6 text-white space-y-4 cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98]',
+      'rounded-3xl p-6 text-white space-y-4 cursor-pointer transition-transform active:scale-[0.98]',
       colorClass,
     ]"
     @click="handleClick"
@@ -20,7 +20,7 @@
     <div class="flex items-center justify-between pt-2">
       <!-- Code with gift icon -->
       <div class="flex items-center gap-2 bg-white/20 rounded-full px-4 py-2">
-        <Gift :size="18" />
+        <!-- <Gift :size="18" /> -->
         <span class="text-sm font-semibold">{{ group.code }}</span>
       </div>
 
@@ -49,9 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { Gift } from 'lucide-vue-next';
-import type { EventGroup } from '~/types/event';
-import { eventGroupColors } from '~/types/event';
+import { Gift } from "lucide-vue-next";
+import type { EventGroup } from "~/types/event";
+import { eventGroupColors } from "~/types/event";
 
 interface Props {
   group: EventGroup;
@@ -67,7 +67,10 @@ const displayedParticipants = computed(() => {
 });
 
 const remainingCount = computed(() => {
-  return Math.max(0, props.group.participants.length - MAX_VISIBLE_PARTICIPANTS);
+  return Math.max(
+    0,
+    props.group.participants.length - MAX_VISIBLE_PARTICIPANTS
+  );
 });
 
 const colorClass = computed(() => {
@@ -76,6 +79,6 @@ const colorClass = computed(() => {
 
 const handleClick = () => {
   // TODO: Naviguer vers le détail du groupe
-  console.log('Groupe cliqué:', props.group.title);
+  console.log("Groupe cliqué:", props.group.title);
 };
 </script>

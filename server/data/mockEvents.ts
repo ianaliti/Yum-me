@@ -43,37 +43,6 @@ export const mockEvents: EventGroup[] = [
     createdBy: '1',
   },
   {
-    id: '2',
-    title: 'Secret santa Mydigitalschool',
-    description: 'Un moment gourmand entre Memli, Jordan, Younes, Jeremy, Nail, Marilou et le reste de l\'équipe.',
-    code: 'F6555',
-    color: 'blue',
-    participants: [
-      {
-        id: '1',
-        name: 'Younes',
-        avatar: 'https://i.pravatar.cc/150?img=12',
-      },
-      {
-        id: '2',
-        name: 'Jeremy',
-        avatar: 'https://i.pravatar.cc/150?img=13',
-      },
-      {
-        id: '3',
-        name: 'Marilou',
-        avatar: 'https://i.pravatar.cc/150?img=47',
-      },
-      {
-        id: '4',
-        name: 'Jessica',
-        avatar: 'https://i.pravatar.cc/150?img=48',
-      },
-    ],
-    createdAt: '2025-01-08T14:30:00Z',
-    createdBy: '2',
-  },
-  {
     id: '3',
     title: 'Anniversaire Sophie',
     description: 'Célébrons l\'anniversaire de Sophie avec un super resto entre amis !',
