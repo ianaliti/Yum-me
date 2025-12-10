@@ -1,3 +1,5 @@
+export type DietaryOption = 'halal' | 'vegan' | 'vegetarian' | 'gluten-free' | 'kosher' | 'dairy-free' | 'nut-free';
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -11,7 +13,8 @@ export interface Restaurant {
   phone: string;
   image: string;
   description: string;
-  dietaryOptions: ('halal' | 'vegan' | 'vegetarian' | 'gluten-free' | 'kosher' | 'dairy-free' | 'nut-free')[];
+  dietaryOptions: DietaryOption[];
+  specialties: string[];
   hours: {
     open: string;
     close: string;
@@ -21,4 +24,14 @@ export interface Restaurant {
     lng: number;
   };
 }
+
+export const dietaryOptionLabels: Record<DietaryOption, string> = {
+  'halal': 'Halal',
+  'vegan': 'Végétalien',
+  'vegetarian': 'Végétarien',
+  'gluten-free': 'Sans gluten',
+  'kosher': 'Kasher',
+  'dairy-free': 'Sans lactose',
+  'nut-free': 'Sans fruits à coque',
+};
 

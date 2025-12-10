@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen w-full">
+  <div class="flex flex-col h-full w-full">
     <!-- Map Container -->
     <main class="flex-1 relative overflow-hidden">
       <!-- Map -->
@@ -19,7 +19,7 @@
           position="top-right"
           :track-user-location="true"
           :show-user-location="true"
-          style="visibility: hidden; opacity: 0; pointer-events: none;"
+          style="visibility: hidden; opacity: 0; pointer-events: none"
         />
 
         <MapboxDefaultMarker
@@ -40,7 +40,16 @@
           :autofocus="shouldAutofocus"
           @filter="handleFilterClick"
           @focus="handleSearchFocus"
+          @blur="handleSearchBlur"
           @submit="handleSearchSubmit"
+        />
+
+        <!-- Autocomplete Results -->
+        <MapSearchAutocomplete
+          :visible="isAutocompleteVisible"
+          :results="searchResults"
+          :loading="isSearching"
+          @select="handleRestaurantSelect"
         />
       </div>
 
@@ -48,7 +57,7 @@
       <button
         v-if="mapReady"
         @click="handleGeolocateClick"
-        class="absolute top-20 right-4 z-10 bg-white shadow-lg rounded-lg p-2.5 border border-border hover:bg-muted transition-colors"
+        class="absolute top-22 right-4 z-[1] bg-white shadow-lg rounded-lg p-2.5 border border-border hover:bg-muted transition-colors"
         aria-label="Me localiser"
       >
         <LocateIcon class="w-5 h-5 text-foreground" />
@@ -90,6 +99,7 @@
 
 <script setup lang="ts">
 import { X as XIcon, Locate as LocateIcon } from "lucide-vue-next";
+import mapboxgl from "mapbox-gl";
 
 definePageMeta({
   layout: "app",
@@ -101,12 +111,8 @@ const restaurantStore = useRestaurantStore();
 const { isOpen, selectedRestaurant, openSheet } = useRestaurantSheet();
 
 // Directions
-const {
-  activeRoute,
-  formattedDistance,
-  formattedDuration,
-  clearRoute,
-} = useDirections();
+const { activeRoute, formattedDistance, formattedDuration, clearRoute } =
+  useDirections();
 
 // Utiliser le composable pour les options de la map
 const { mapOptions, activateGeolocateControl } = useGeolocation();
@@ -124,19 +130,51 @@ const config = useRuntimeConfig();
 const mapInstance = ref<any>(null);
 const shouldAutofocus = computed(() => route.query.focus === "true");
 
+// Tracker le restaurant focusé et les éléments des markers
+const focusedRestaurantId = ref<string | null>(null);
+const markerElements = new Map<string, { wrapper: HTMLElement; img: HTMLElement }>();
+
+// Restaurant search composable
+const {
+  searchResults,
+  isSearching,
+  isAutocompleteVisible,
+  debouncedSearch,
+  clearSearch,
+  hideAutocomplete,
+  showAutocomplete,
+} = useRestaurantSearch();
+
 const handleFilterClick = () => {
   // TODO: Ouvrir le panel de filtres
 };
 
 const handleSearchFocus = () => {
-  // TODO: Afficher les suggestions
+  showAutocomplete();
+};
+
+const handleSearchBlur = () => {
+  // Délai pour permettre le clic sur un résultat
+  setTimeout(() => {
+    hideAutocomplete();
+  }, 200);
 };
 
 const handleSearchSubmit = async (query: string) => {
+  // Si on a des résultats de recherche de restaurants, zoomer sur tous les résultats
+  if (searchResults.value.length > 0) {
+    zoomToRestaurants(searchResults.value);
+    hideAutocomplete();
+    return;
+  }
+
+  // Sinon, rechercher une ville comme avant
   try {
     const mapboxToken = config.public.mapboxAccessToken;
     const response = await fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxToken}&types=place,locality&limit=1`
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        query
+      )}.json?access_token=${mapboxToken}&types=place,locality&limit=1`
     );
     const data = await response.json();
 
@@ -157,6 +195,94 @@ const handleSearchSubmit = async (query: string) => {
   }
 };
 
+const handleRestaurantSelect = (restaurant: any) => {
+  // Fermer l'autocomplétion
+  hideAutocomplete();
+
+  // Retirer le focus de l'ancien marker
+  if (focusedRestaurantId.value) {
+    updateMarkerFocus(focusedRestaurantId.value, false);
+  }
+
+  // Appliquer le focus au nouveau marker
+  focusedRestaurantId.value = restaurant.id;
+  updateMarkerFocus(restaurant.id, true);
+
+  // Déplacer la carte vers le restaurant
+  if (mapInstance.value) {
+    mapInstance.value.flyTo({
+      center: [restaurant.coordinates.lng, restaurant.coordinates.lat],
+      zoom: 16,
+      duration: 1500,
+    });
+  }
+};
+
+const zoomToRestaurants = (restaurants: any[]) => {
+  if (!mapInstance.value || restaurants.length === 0) return;
+
+  if (restaurants.length === 1) {
+    // Si un seul restaurant, zoomer dessus
+    const restaurant = restaurants[0];
+    mapInstance.value.flyTo({
+      center: [restaurant.coordinates.lng, restaurant.coordinates.lat],
+      zoom: 16,
+      duration: 1500,
+    });
+    openSheet(restaurant);
+  } else {
+    // Si plusieurs restaurants, calculer les bounds pour tous les afficher
+    const bounds = new mapboxgl.LngLatBounds();
+
+    restaurants.forEach((restaurant) => {
+      bounds.extend([restaurant.coordinates.lng, restaurant.coordinates.lat]);
+    });
+
+    mapInstance.value.fitBounds(bounds, {
+      padding: { top: 100, bottom: 400, left: 50, right: 50 },
+      duration: 1500,
+      maxZoom: 15,
+    });
+  }
+};
+
+// Watcher pour déclencher la recherche quand l'utilisateur tape
+watch(searchQuery, (newQuery) => {
+  if (newQuery.trim().length >= 2) {
+    debouncedSearch(newQuery);
+  } else {
+    clearSearch();
+  }
+});
+
+// Fonction pour mettre à jour le focus d'un marker
+const updateMarkerFocus = (restaurantId: string, isFocused: boolean) => {
+  const elements = markerElements.get(restaurantId);
+  if (elements) {
+    if (isFocused) {
+      elements.img.style.transform = "scale(1.7)";
+    } else {
+      elements.img.style.transform = "scale(1)";
+    }
+  }
+};
+
+// Fonction pour masquer tous les markers sauf un
+const hideAllMarkersExcept = (restaurantId: string) => {
+  markerElements.forEach((elements, id) => {
+    if (id !== restaurantId) {
+      elements.wrapper.style.display = "none";
+    }
+  });
+};
+
+// Fonction pour afficher tous les markers
+const showAllMarkers = () => {
+  markerElements.forEach((elements) => {
+    elements.wrapper.style.display = "block";
+  });
+};
+
 // Créer un élément image pour le marker custom
 const createCustomMarkerElement = (restaurant: any) => {
   const wrapper = document.createElement("div");
@@ -173,12 +299,19 @@ const createCustomMarkerElement = (restaurant: any) => {
 
   wrapper.appendChild(img);
 
+  // Stocker la référence
+  markerElements.set(restaurant.id, { wrapper, img });
+
   // Hover effect
   wrapper.addEventListener("mouseenter", () => {
-    img.style.transform = "scale(1.15)";
+    if (focusedRestaurantId.value !== restaurant.id) {
+      img.style.transform = "scale(1.15)";
+    }
   });
   wrapper.addEventListener("mouseleave", () => {
-    img.style.transform = "scale(1)";
+    if (focusedRestaurantId.value !== restaurant.id) {
+      img.style.transform = "scale(1)";
+    }
   });
 
   // Click to open sheet
@@ -206,6 +339,14 @@ const restaurants = computed(() => {
 const onMapLoad = (map: any) => {
   mapInstance.value = map;
   activateGeolocateControl(map);
+
+  // Retirer le focus quand on clique sur la map (en dehors d'un marker)
+  map.on("click", () => {
+    if (focusedRestaurantId.value) {
+      updateMarkerFocus(focusedRestaurantId.value, false);
+      focusedRestaurantId.value = null;
+    }
+  });
 };
 
 // Handler pour fermer la route manuellement
@@ -213,6 +354,8 @@ const handleCloseRoute = () => {
   if (mapInstance.value) {
     clearRoute(mapInstance.value);
   }
+  // Réafficher tous les markers
+  showAllMarkers();
 };
 
 // Handler pour le bouton de géolocalisation
@@ -222,8 +365,11 @@ const handleGeolocateClick = () => {
   }
 };
 
-// Provide map instance pour l'injection dans RestaurantBottomSheet
+// Provide map instance, searchQuery et fonctions markers pour l'injection dans RestaurantBottomSheet
 provide("mapInstance", mapInstance);
+provide("searchQuery", searchQuery);
+provide("hideAllMarkersExcept", hideAllMarkersExcept);
+provide("showAllMarkers", showAllMarkers);
 
 // Auto-clear route seulement quand on sélectionne un AUTRE restaurant (pas quand on ferme)
 watch(selectedRestaurant, (newRestaurant, oldRestaurant) => {
@@ -238,6 +384,8 @@ watch(selectedRestaurant, (newRestaurant, oldRestaurant) => {
     mapInstance.value
   ) {
     clearRoute(mapInstance.value);
+    // Réafficher tous les markers
+    showAllMarkers();
   }
 });
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="h-screen flex flex-col bg-background overflow-hidden">
     <!-- Main content -->
-    <main class="pb-20">
+    <main class="flex-1 overflow-hidden">
       <slot />
     </main>
 
