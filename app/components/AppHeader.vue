@@ -14,7 +14,7 @@
         <!-- Location Text -->
         <div class="flex flex-col items-start text-left">
           <span class="text-sm text-foreground/60 flex items-center gap-1">
-            Location actuel
+            Localisation actuelle
             <ChevronDown :size="16" class="text-foreground/60" />
           </span>
           <span class="text-base font-semibold text-[#003459] line-clamp-1">
