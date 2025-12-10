@@ -1,6 +1,6 @@
 <template>
   <div
-    class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+    class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-light text-xs transition-colors"
     :class="[
       variant === 'primary'
         ? 'bg-primary text-primary-foreground'

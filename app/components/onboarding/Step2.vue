@@ -22,51 +22,51 @@
 
       <!-- Title and Description with Badges around -->
       <div class="relative text-center space-y-1 max-w-md px-6 py-12 mt-8">
-      <!-- Top Left Badge -->
-      <div class="absolute -top-2 -left-4 -rotate-6 animate-float-1">
-        <OnboardingFeatureBadge
-          label="Recherche intelligente"
-          icon="search"
-          variant="primary"
-        />
-      </div>
+        <!-- Top Left Badge -->
+        <div class="absolute -top-2 left-2 -rotate-6 animate-float-1">
+          <OnboardingFeatureBadge
+            label="Recherche"
+            icon="search"
+            variant="primary"
+          />
+        </div>
 
-      <!-- Top Right Badge -->
-      <div class="absolute -top-2 -right-4 rotate-6 animate-float-2">
-        <OnboardingFeatureBadge
-          label="Carte interactive"
-          icon="map"
-          variant="secondary"
-        />
-      </div>
+        <!-- Top Right Badge -->
+        <div class="absolute -top-2 right-4 rotate-6 animate-float-2">
+          <OnboardingFeatureBadge
+            label="Carte interactive"
+            icon="map"
+            variant="secondary"
+          />
+        </div>
 
-      <!-- Title and Description -->
-      <h2 class="text-2xl font-bold text-secondary">
-        Marre de chercher un restaurant ?
-      </h2>
-      <p class="text-sm text-foreground/70 leading-relaxed">
-        Qui respecte tes habitudes alimentaires ? Yum'me le trouve pour toi.
-        Simplement.
-      </p>
+        <!-- Title and Description -->
+        <h2 class="text-2xl font-bold text-secondary">
+          Marre de chercher un restaurant ?
+        </h2>
+        <p class="text-sm text-foreground/70 leading-relaxed">
+          Qui respecte tes habitudes alimentaires ? Yum'me le trouve pour toi.
+          Simplement.
+        </p>
 
-      <!-- Bottom Left Badge -->
-      <div class="absolute -bottom-2 -left-4 rotate-3 animate-float-3">
-        <OnboardingFeatureBadge
-          label="Filtres alimentaires"
-          icon="filter"
-          variant="secondary"
-        />
-      </div>
+        <!-- Bottom Left Badge -->
+        <div class="absolute -bottom-2 left-2 rotate-3 animate-float-3">
+          <OnboardingFeatureBadge
+            label="Filtres alimentaires"
+            icon="filter"
+            variant="secondary"
+          />
+        </div>
 
-      <!-- Bottom Right Badge -->
-      <div class="absolute -bottom-2 -right-4 -rotate-3 animate-float-4">
-        <OnboardingFeatureBadge
-          label="Recommandations"
-          icon="star"
-          variant="primary"
-        />
+        <!-- Bottom Right Badge -->
+        <div class="absolute -bottom-2 right-2 -rotate-3 animate-float-4">
+          <OnboardingFeatureBadge
+            label="Recommandations"
+            icon="star"
+            variant="primary"
+          />
+        </div>
       </div>
-    </div>
     </div>
 
     <!-- Spacer for fixed button at bottom (managed by index.vue) -->

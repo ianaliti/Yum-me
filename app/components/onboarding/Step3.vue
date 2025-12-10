@@ -53,7 +53,6 @@ const dietTags = [
   "Sans gluten",
   "Halal",
   "Sans lactose",
-  "Casher",
   "Keto",
   "Sportif",
   "Allergie",

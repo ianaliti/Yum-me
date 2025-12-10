@@ -35,6 +35,7 @@
           v-model="searchQuery"
           :show-filters="true"
           :show-settings="false"
+          :autofocus="shouldAutofocus"
           @filter="handleFilterClick"
           @focus="handleSearchFocus"
           @submit="handleSearchSubmit"
@@ -67,9 +68,11 @@ const error = computed(() => restaurantStore.error);
 const mapReady = computed(() => geolocationStore.mapReady);
 
 // Search
+const route = useRoute();
 const searchQuery = ref("");
 const config = useRuntimeConfig();
 const mapInstance = ref<any>(null);
+const shouldAutofocus = computed(() => route.query.focus === "true");
 
 const handleFilterClick = () => {
   // TODO: Ouvrir le panel de filtres

@@ -8,9 +8,11 @@
 
       <!-- Input -->
       <input
+        ref="inputRef"
         v-model="searchQuery"
         type="text"
         :placeholder="placeholder"
+        :autofocus="autofocus"
         class="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
         @focus="handleFocus"
         @blur="handleBlur"
@@ -48,14 +50,18 @@ interface Props {
   showFilters?: boolean;
   showSettings?: boolean;
   modelValue?: string;
+  autofocus?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: "Rechercher un plat, restaurant ou etc.",
+  placeholder: "Rechercher un plat, restaurant, etc.",
   showFilters: true,
   showSettings: false,
   modelValue: "",
+  autofocus: false,
 });
+
+const inputRef = ref<HTMLInputElement | null>(null);
 
 const emit = defineEmits<{
   "update:modelValue": [value: string];

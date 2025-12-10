@@ -10,28 +10,28 @@ export const useNavigation = () => {
 
   const navigationItems: NavigationItem[] = [
     {
-      name: 'home',
-      label: 'Accueil',
-      icon: 'IconHome',
-      path: '/accueil',
+      name: "home",
+      label: "Accueil",
+      icon: "IconHome",
+      path: "/accueil",
     },
     {
-      name: 'restaurants',
-      label: 'Restaurants',
-      icon: 'IconRestaurant',
-      path: '/restaurants',
+      name: "restaurants",
+      label: "Restaurants",
+      icon: "IconRestaurant",
+      path: "/restaurants",
     },
     {
-      name: 'saved',
-      label: 'Sauvegarder',
-      icon: 'IconBookmark',
-      path: '/saved',
+      name: "saved",
+      label: "Evénements",
+      icon: "IconBookmark",
+      path: "/saved",
     },
     {
-      name: 'profile',
-      label: 'Profile',
-      icon: 'IconUser',
-      path: '/profile',
+      name: "profile",
+      label: "Profile",
+      icon: "IconUser",
+      path: "/profile",
     },
   ];
 
