@@ -9,6 +9,11 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
   modules: ["@pinia/nuxt", "shadcn-nuxt", "nuxt-mapbox"],
+  nitro: {
+    experimental: {
+      websocket: true
+    }
+  },
   mapbox: {
     accessToken: process.env.NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "",
   },

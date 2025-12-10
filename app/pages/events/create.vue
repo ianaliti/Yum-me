@@ -55,10 +55,11 @@
     <div class="fixed bottom-20 left-0 right-0 p-6 bg-background">
       <button
         @click="handleCreate"
-        :disabled="!groupName.trim() || !groupDescription.trim()"
-        class="w-full h-14 text-base font-semibold bg-secondary text-white hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl shadow-lg transition-all"
+        :disabled="!groupName.trim() || !groupDescription.trim() || creating"
+        class="w-full h-16 text-lg font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-full shadow-lg transition-all"
       >
-        Créer
+        <span v-if="creating">Création en cours...</span>
+        <span v-else>Créer l'événement</span>
       </button>
     </div>
   </div>
@@ -80,21 +81,51 @@ useHead({
 
 const groupName = ref("");
 const groupDescription = ref("");
+const creating = ref(false);
+
+const { createRoom } = useRoom();
 
 const goBack = () => {
   navigateTo("/events");
 };
 
-const handleCreate = () => {
+const handleCreate = async () => {
   if (!groupName.value.trim() || !groupDescription.value.trim()) return;
 
-  // TODO: Implémenter la logique de création de groupe
-  console.log("Créer un groupe:", {
-    name: groupName.value,
-    description: groupDescription.value,
-  });
+  creating.value = true;
 
-  // Pour l'instant, on retourne à la page events
-  navigateTo("/events");
+  try {
+    // Délai minimum de 2 secondes pour afficher le loading
+    const [room] = await Promise.all([
+      (async () => {
+        // Mock participant - dans un vrai projet, ça viendrait du store user
+        const currentUser = {
+          id: '1',
+          name: 'Younes Boualam',
+          avatar: 'https://i.pravatar.cc/150?img=12',
+        };
+
+        return await createRoom(
+          groupName.value,
+          groupDescription.value,
+          currentUser
+        );
+      })(),
+      new Promise(resolve => setTimeout(resolve, 2000))
+    ]);
+
+    if (room) {
+      // Redirige vers la page de l'événement
+      // On ne remet pas creating à false car on va naviguer
+      navigateTo(`/events/room/${room.code}`);
+    } else {
+      alert("Erreur lors de la création de l'événement");
+      creating.value = false;
+    }
+  } catch (error) {
+    console.error("Error creating room:", error);
+    alert("Erreur lors de la création de l'événement");
+    creating.value = false;
+  }
 };
 </script>

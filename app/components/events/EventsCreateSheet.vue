@@ -12,24 +12,24 @@
 
       <!-- Content -->
       <div class="px-6 pb-8 space-y-4">
-        <!-- Rejoindre un groupe button -->
+        <!-- Rejoindre un événement button -->
         <Button
           variant="outline"
           size="lg"
           class="w-full h-16 text-lg font-bold bg-background text-secondary hover:bg-background hover:text-secondary hover:opacity-80 border-0 rounded-full transition-opacity"
           @click="handleJoinGroup"
         >
-          Rejoindre un groupe
+          Rejoindre un événement
         </Button>
 
-        <!-- Créer un groupe button -->
+        <!-- Créer un événement button -->
         <Button
           variant="default"
           size="lg"
           class="w-full h-16 text-lg font-bold bg-primary text-secondary hover:bg-primary/90 border-0 rounded-full"
           @click="handleCreateGroup"
         >
-          Créer un groupe
+          Créer un événement
         </Button>
       </div>
     </SheetContent>

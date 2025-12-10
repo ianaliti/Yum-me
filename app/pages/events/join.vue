@@ -29,8 +29,12 @@
           v-model="groupCode"
           type="text"
           placeholder="Entrez le code du groupe"
-          class="h-14 text-base bg-muted/30 border-2 border-border rounded-2xl placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-accent"
+          class="h-14 text-base bg-muted/30 border-2 border-border rounded-2xl placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-accent uppercase"
+          @keyup.enter="handleJoin"
         />
+        <p v-if="errorMessage" class="text-sm text-destructive">
+          {{ errorMessage }}
+        </p>
       </div>
     </div>
 
@@ -38,10 +42,11 @@
     <div class="fixed bottom-20 left-0 right-0 p-6 bg-background">
       <button
         @click="handleJoin"
-        :disabled="!groupCode.trim()"
-        class="w-full h-14 text-base font-semibold bg-secondary text-white hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl shadow-lg transition-all"
+        :disabled="!groupCode.trim() || joining"
+        class="w-full h-16 text-lg font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-full shadow-lg transition-all"
       >
-        Rejoindre
+        <span v-if="joining">En cours...</span>
+        <span v-else>Rejoindre l'événement</span>
       </button>
     </div>
   </div>
@@ -61,18 +66,51 @@ useHead({
 });
 
 const groupCode = ref("");
+const joining = ref(false);
+const errorMessage = ref("");
+
+const { joinRoom } = useRoom();
 
 const goBack = () => {
   navigateTo("/events");
 };
 
-const handleJoin = () => {
+const handleJoin = async () => {
   if (!groupCode.value.trim()) return;
 
-  // TODO: Implémenter la logique de rejoindre un groupe
-  console.log("Rejoindre le groupe avec le code:", groupCode.value);
+  joining.value = true;
+  errorMessage.value = "";
 
-  // Pour l'instant, on retourne à la page events
-  navigateTo("/events");
+  try {
+    // Délai minimum de 2 secondes pour afficher le loading
+    const [room] = await Promise.all([
+      (async () => {
+        // Mock participant - dans un vrai projet, ça viendrait du store user
+        // On génère un ID unique pour chaque nouvel utilisateur qui rejoint
+        const userId = `user_${Date.now()}`;
+        const currentUser = {
+          id: userId,
+          name: `User ${userId.slice(-4)}`,
+          avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+        };
+
+        return await joinRoom(groupCode.value, currentUser);
+      })(),
+      new Promise(resolve => setTimeout(resolve, 2000))
+    ]);
+
+    if (room) {
+      // Redirige vers la page de l'événement
+      // On ne remet pas joining à false car on va naviguer
+      navigateTo(`/events/room/${room.code}`);
+    } else {
+      errorMessage.value = "Code invalide ou événement introuvable";
+      joining.value = false;
+    }
+  } catch (error) {
+    console.error("Error joining room:", error);
+    errorMessage.value = error instanceof Error ? error.message : "Erreur lors de la connexion à l'événement";
+    joining.value = false;
+  }
 };
 </script>

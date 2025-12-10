@@ -23,7 +23,7 @@ export const useNavigation = () => {
     },
     {
       name: "events",
-      label: "Ensemble",
+      label: "Événement",
       icon: "IconBookmark",
       path: "/events",
     },
