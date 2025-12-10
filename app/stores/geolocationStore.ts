@@ -25,6 +25,13 @@ export const useGeolocationStore = defineStore('geolocation', {
       if (!state.lastFetchTime) return false;
       return Date.now() - state.lastFetchTime < CACHE_DURATION;
     },
+    isRealLocation: (state) => {
+      const defaultCenter = [6.1294, 45.8992]; // Annecy
+      return (
+        state.center[0] !== defaultCenter[0] ||
+        state.center[1] !== defaultCenter[1]
+      );
+    },
   },
 
   actions: {

@@ -82,6 +82,19 @@
             </a>
           </div>
 
+          <!-- Bouton Itinéraire -->
+          <Button
+            @click="handleDirections"
+            :disabled="!userLocationAvailable || directionsLoading"
+            variant="default"
+            class="w-full"
+          >
+            <Navigation v-if="!directionsLoading" class="w-4 h-4 mr-2" />
+            <Loader2 v-else class="w-4 h-4 mr-2 animate-spin" />
+            <span v-if="directionsLoading">Calcul en cours...</span>
+            <span v-else>Itinéraire</span>
+          </Button>
+
           <!-- Dietary Options -->
           <div
             v-if="selectedRestaurant.dietaryOptions.length"
@@ -103,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { MapPin, Clock, Phone } from "lucide-vue-next";
+import { MapPin, Clock, Phone, Navigation, Loader2 } from "lucide-vue-next";
 import {
   Sheet,
   SheetContent,
@@ -112,8 +125,42 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const { isOpen, selectedRestaurant, closeSheet } = useRestaurantSheet();
+const geolocationStore = useGeolocationStore();
+const {
+  loading: directionsLoading,
+  fetchDirections,
+  drawRouteOnMap,
+  activeRoute,
+} = useDirections();
+
+// Inject map instance depuis la page restaurants.vue
+const mapInstance = inject<Ref<any>>("mapInstance");
+
+// Vérifier si la position utilisateur est réelle (pas la position par défaut)
+const userLocationAvailable = computed(() => geolocationStore.isRealLocation);
+
+async function handleDirections() {
+  if (!selectedRestaurant.value || !mapInstance?.value) return;
+
+  const origin = geolocationStore.center;
+  const destination = [
+    selectedRestaurant.value.coordinates.lng,
+    selectedRestaurant.value.coordinates.lat,
+  ] as [number, number];
+
+  await fetchDirections(origin, destination);
+
+  // Dessiner sur la map
+  if (mapInstance.value && activeRoute.value) {
+    drawRouteOnMap(mapInstance.value, activeRoute.value.geometry);
+  }
+
+  // Fermer le sheet après avoir calculé l'itinéraire
+  closeSheet();
+}
 
 function handleOpenChange(open: boolean) {
   if (!open) {

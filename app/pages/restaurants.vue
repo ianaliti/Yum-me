@@ -13,11 +13,13 @@
         <!-- Mapbox Controls -->
         <!-- <MapboxNavigationControl position="top-right" /> -->
 
-        <!-- Geolocate Control pour afficher le point bleu -->
+        <!-- Geolocate Control caché (pour afficher le point bleu) -->
+        <!-- On le garde pour la fonctionnalité mais on le cache avec du CSS -->
         <MapboxGeolocateControl
-          position="bottom-right"
+          position="top-right"
           :track-user-location="true"
           :show-user-location="true"
+          style="visibility: hidden; opacity: 0; pointer-events: none;"
         />
 
         <MapboxDefaultMarker
@@ -42,6 +44,44 @@
         />
       </div>
 
+      <!-- Bouton géolocalisation custom -->
+      <button
+        v-if="mapReady"
+        @click="handleGeolocateClick"
+        class="absolute top-20 right-4 z-10 bg-white shadow-lg rounded-lg p-2.5 border border-border hover:bg-muted transition-colors"
+        aria-label="Me localiser"
+      >
+        <LocateIcon class="w-5 h-5 text-foreground" />
+      </button>
+
+      <!-- Route Badges -->
+      <MapRouteBadge
+        v-if="activeRoute"
+        :distance="formattedDistance"
+        :duration="formattedDuration"
+        :visible="true"
+        class="absolute bottom-24 left-4 z-10"
+      />
+
+      <!-- Bouton fermer route à droite -->
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 translate-x-4"
+        enter-to-class="opacity-100 translate-x-0"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100 translate-x-0"
+        leave-to-class="opacity-0 translate-x-4"
+      >
+        <button
+          v-if="activeRoute"
+          @click="handleCloseRoute"
+          class="absolute bottom-24 right-4 z-10 bg-white shadow-lg rounded-full p-3 border border-border hover:bg-muted transition-colors"
+          aria-label="Fermer l'itinéraire"
+        >
+          <XIcon class="w-5 h-5 text-primary" />
+        </button>
+      </Transition>
+
       <!-- Bottom Sheet -->
       <RestaurantBottomSheet />
     </main>
@@ -49,6 +89,8 @@
 </template>
 
 <script setup lang="ts">
+import { X as XIcon, Locate as LocateIcon } from "lucide-vue-next";
+
 definePageMeta({
   layout: "app",
 });
@@ -56,7 +98,15 @@ definePageMeta({
 // Utiliser les stores directement pour un meilleur contrôle du cache
 const geolocationStore = useGeolocationStore();
 const restaurantStore = useRestaurantStore();
-const { openSheet } = useRestaurantSheet();
+const { isOpen, selectedRestaurant, openSheet } = useRestaurantSheet();
+
+// Directions
+const {
+  activeRoute,
+  formattedDistance,
+  formattedDuration,
+  clearRoute,
+} = useDirections();
 
 // Utiliser le composable pour les options de la map
 const { mapOptions, activateGeolocateControl } = useGeolocation();
@@ -158,6 +208,39 @@ const onMapLoad = (map: any) => {
   activateGeolocateControl(map);
 };
 
+// Handler pour fermer la route manuellement
+const handleCloseRoute = () => {
+  if (mapInstance.value) {
+    clearRoute(mapInstance.value);
+  }
+};
+
+// Handler pour le bouton de géolocalisation
+const handleGeolocateClick = () => {
+  if (mapInstance.value) {
+    activateGeolocateControl(mapInstance.value);
+  }
+};
+
+// Provide map instance pour l'injection dans RestaurantBottomSheet
+provide("mapInstance", mapInstance);
+
+// Auto-clear route seulement quand on sélectionne un AUTRE restaurant (pas quand on ferme)
+watch(selectedRestaurant, (newRestaurant, oldRestaurant) => {
+  // Ne rien faire si on ferme juste le sheet (newRestaurant devient null)
+  if (!newRestaurant) return;
+
+  // Effacer la route seulement si on sélectionne un restaurant différent
+  if (
+    oldRestaurant &&
+    newRestaurant.id !== oldRestaurant.id &&
+    activeRoute.value &&
+    mapInstance.value
+  ) {
+    clearRoute(mapInstance.value);
+  }
+});
+
 // Demander la position au chargement
 onMounted(async () => {
   // Charger les données depuis le cache ou l'API
@@ -174,3 +257,12 @@ useHead({
   ],
 });
 </script>
+
+<style>
+/* Cacher le contrôle de géolocalisation Mapbox natif */
+.mapboxgl-ctrl-geolocate {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+</style>
