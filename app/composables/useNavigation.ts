@@ -22,10 +22,10 @@ export const useNavigation = () => {
       path: "/restaurants",
     },
     {
-      name: "saved",
-      label: "Evénements",
+      name: "events",
+      label: "Ensemble",
       icon: "IconBookmark",
-      path: "/saved",
+      path: "/events",
     },
     {
       name: "profile",
