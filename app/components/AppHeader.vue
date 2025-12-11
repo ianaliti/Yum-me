@@ -47,11 +47,21 @@ import IconMap from "@/components/icons/IconMap.vue";
 import IconNotification from "@/components/icons/IconNotification.vue";
 
 const geolocationStore = useGeolocationStore();
+const { reverseGeocode, addressCache } = useReverseGeocode();
 
 const displayLocation = computed(() => {
-  // TODO: Implémenter le reverse geocoding pour obtenir l'adresse
-  // Pour l'instant, on affiche un placeholder
-  return "Annecy, 2 place pérous..";
+  // Si on a une adresse en cache, l'afficher
+  if (addressCache.value) {
+    return addressCache.value;
+  }
+
+  // Si la géolocalisation est prête et qu'on a une position réelle
+  if (geolocationStore.mapReady && geolocationStore.isRealLocation) {
+    return "Chargement...";
+  }
+
+  // Sinon, afficher l'adresse par défaut (Annecy)
+  return "14 Av. du Rhône, 74000 Annecy";
 });
 
 const hasNotifications = ref(true); // TODO: Connecter au système de notifications
@@ -67,4 +77,24 @@ const handleNotificationClick = () => {
     description: "Les notifications seront bientôt disponibles.",
   });
 };
+
+// Faire le reverse geocoding au montage si on a une position
+onMounted(async () => {
+  if (geolocationStore.mapReady && geolocationStore.isRealLocation) {
+    const [lng, lat] = geolocationStore.center;
+    await reverseGeocode(lng, lat);
+  }
+});
+
+// Watcher pour mettre à jour l'adresse quand la position change
+watch(
+  () => geolocationStore.center,
+  async (newCenter) => {
+    if (geolocationStore.isRealLocation) {
+      const [lng, lat] = newCenter;
+      await reverseGeocode(lng, lat);
+    }
+  },
+  { deep: true }
+);
 </script>
