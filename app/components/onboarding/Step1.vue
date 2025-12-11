@@ -4,10 +4,9 @@
     <div class="pt-6 flex justify-center flex-shrink-0">
       <div class="w-48 sm:w-52">
         <img
-          src="/logo.svg"
+          :src="logoSrc"
           alt="Yum'me logo"
           class="w-full h-auto object-contain"
-          loading="eager"
         />
       </div>
     </div>
@@ -16,12 +15,11 @@
     <div class="flex-1 flex items-center justify-center pb-20">
       <div class="flex flex-col items-center gap-4 w-full">
         <!-- Main Illustration -->
-        <div class="w-80 sm:w-92">
+        <div class="w-80 sm:w-92 min-h-[200px] flex items-center justify-center">
           <img
-            src="/onboarding/1.svg"
+            :src="step1Src"
             alt="Onboarding illustration"
             class="w-full h-auto object-contain max-h-[30vh]"
-            loading="eager"
           />
         </div>
 
@@ -50,5 +48,8 @@
 </template>
 
 <script setup lang="ts">
+import logoSrc from '~/assets/images/logo.svg';
+import step1Src from '~/assets/images/onboarding/1.svg';
+
 const { nextStep } = useOnboarding();
 </script>

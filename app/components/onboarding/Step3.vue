@@ -4,10 +4,9 @@
     <div class="pt-10 flex justify-center flex-shrink-0">
       <div class="w-48 sm:w-52">
         <img
-          src="/logo.svg"
+          :src="logoSrc"
           alt="Yum'me logo"
           class="w-full h-auto object-contain"
-          loading="eager"
         />
       </div>
     </div>
@@ -15,12 +14,11 @@
     <!-- Content - Centered in remaining space -->
     <div class="flex-1 flex flex-col items-center justify-center space-y-3">
       <!-- Main Illustration -->
-      <div class="w-52 sm:w-60">
+      <div class="w-52 sm:w-60 min-h-[160px] flex items-center justify-center">
         <img
-          src="/onboarding/3.svg"
+          :src="step3Src"
           alt="Onboarding illustration"
           class="w-full h-auto object-contain max-h-[22vh]"
-          loading="eager"
         />
       </div>
 
@@ -49,6 +47,9 @@
 </template>
 
 <script setup lang="ts">
+import logoSrc from '~/assets/images/logo.svg';
+import step3Src from '~/assets/images/onboarding/3.svg';
+
 const { dietaryPreferences } = useOnboarding();
 
 const dietTags = [
