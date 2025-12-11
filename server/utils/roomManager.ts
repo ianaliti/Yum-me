@@ -1,5 +1,5 @@
 // Gestionnaire de rooms en mémoire pour le prototype
-import type { EventGroup, EventParticipant } from '~/types/event';
+import type { EventGroup, EventParticipant, ChatMessage } from '~/types/event';
 
 interface Room {
   id: string;
@@ -8,6 +8,7 @@ interface Room {
   description: string;
   color: "red" | "blue" | "green" | "purple" | "orange" | "pink";
   participants: Map<string, EventParticipant>; // socketId -> participant
+  messages: ChatMessage[];
   createdAt: string;
   createdBy: string;
 }
@@ -46,6 +47,7 @@ class RoomManager {
       description,
       color: this.generateColor(),
       participants: new Map([[socketId, creator]]),
+      messages: [],
       createdAt: new Date().toISOString(),
       createdBy: creator.id,
     };
@@ -112,6 +114,18 @@ class RoomManager {
     return code ? this.getRoom(code) : null;
   }
 
+  // Ajoute un message à une room
+  addMessage(code: string, message: ChatMessage): boolean {
+    const room = this.getRoom(code);
+
+    if (!room) {
+      return false;
+    }
+
+    room.messages.push(message);
+    return true;
+  }
+
   // Convertit une room en EventGroup pour le client
   roomToEventGroup(room: Room): EventGroup {
     return {
@@ -121,6 +135,7 @@ class RoomManager {
       description: room.description,
       color: room.color,
       participants: Array.from(room.participants.values()),
+      messages: room.messages,
       createdAt: room.createdAt,
       createdBy: room.createdBy,
     };

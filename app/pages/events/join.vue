@@ -70,6 +70,20 @@ const joining = ref(false);
 const errorMessage = ref("");
 
 const { joinRoom } = useRoom();
+const { getCurrentUser, setCurrentUser } = useCurrentUser();
+
+// Fonction pour reset les valeurs
+const resetForm = () => {
+  groupCode.value = "";
+  joining.value = false;
+  errorMessage.value = "";
+};
+
+// Reset à chaque fois qu'on arrive sur la page (première fois)
+onMounted(resetForm);
+
+// Reset aussi quand la page est réactivée depuis le cache (navigation retour)
+onActivated(resetForm);
 
 const goBack = () => {
   navigateTo("/events");
@@ -85,16 +99,20 @@ const handleJoin = async () => {
     // Délai minimum de 2 secondes pour afficher le loading
     const [room] = await Promise.all([
       (async () => {
-        // Mock participant - dans un vrai projet, ça viendrait du store user
-        // On génère un ID unique pour chaque nouvel utilisateur qui rejoint
-        const userId = `user_${Date.now()}`;
-        const currentUser = {
+        // Génère un utilisateur unique pour chaque personne qui rejoint
+        const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const randomAvatar = Math.floor(Math.random() * 70) + 1;
+
+        const newUser = {
           id: userId,
-          name: `User ${userId.slice(-4)}`,
-          avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+          name: `Invité ${userId.slice(-4)}`,
+          avatar: `https://i.pravatar.cc/150?img=${randomAvatar}`,
         };
 
-        return await joinRoom(groupCode.value, currentUser);
+        // Sauvegarde cet utilisateur pour la session
+        setCurrentUser(newUser);
+
+        return await joinRoom(groupCode.value, newUser);
       })(),
       new Promise(resolve => setTimeout(resolve, 2000))
     ]);

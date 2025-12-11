@@ -1,9 +1,9 @@
 <template>
-  <div class="h-full flex flex-col w-full">
+  <div class="h-full flex flex-col w-full overflow-hidden">
     <!-- Content - Centered vertically and horizontally -->
-    <div class="flex-1 flex flex-col items-center justify-center space-y-8">
+    <div class="flex-1 flex flex-col items-center justify-center space-y-4 sm:space-y-8 py-4">
       <!-- Logo -->
-      <div class="w-60">
+      <div class="w-40 sm:w-52 md:w-60 max-h-[15vh]">
         <img
           src="/logo.svg"
           alt="Yum'me logo"
@@ -12,7 +12,7 @@
       </div>
 
       <!-- Main Illustration -->
-      <div class="w-90">
+      <div class="w-64 sm:w-80 md:w-90 max-h-[35vh]">
         <img
           src="/onboarding/1.svg"
           alt="Onboarding illustration"
@@ -21,8 +21,8 @@
       </div>
 
       <!-- Text -->
-      <div class="text-center space-y-1 max-w-sm">
-        <h1 class="text-3xl font-bold">
+      <div class="text-center space-y-1 max-w-sm px-4">
+        <h1 class="text-2xl sm:text-3xl font-bold">
           <span class="text-secondary">Bienvenue sur</span>
           {{ " " }}
           <span class="text-primary">Yum'me !</span>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Button fixed at bottom -->
-    <div class="pb-8 w-full">
+    <div class="pb-6 sm:pb-8 w-full px-4 sm:px-0">
       <Button size="xl" variant="secondary" class="w-full" @click="nextStep">
         Commencer
       </Button>

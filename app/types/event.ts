@@ -12,6 +12,15 @@ export interface EventParticipant {
   avatar: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  participantId: string;
+  participantName: string;
+  participantAvatar: string;
+  content: string;
+  timestamp: string;
+}
+
 export interface EventGroup {
   id: string;
   title: string;
@@ -19,6 +28,7 @@ export interface EventGroup {
   code: string;
   color: "red" | "blue" | "green" | "purple" | "orange" | "pink";
   participants: EventParticipant[];
+  messages: ChatMessage[];
   createdAt: string;
   createdBy: string;
 }

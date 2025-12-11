@@ -84,6 +84,20 @@ const groupDescription = ref("");
 const creating = ref(false);
 
 const { createRoom } = useRoom();
+const { getCurrentUser, setCurrentUser } = useCurrentUser();
+
+// Fonction pour reset les valeurs
+const resetForm = () => {
+  groupName.value = "";
+  groupDescription.value = "";
+  creating.value = false;
+};
+
+// Reset à chaque fois qu'on arrive sur la page (première fois)
+onMounted(resetForm);
+
+// Reset aussi quand la page est réactivée depuis le cache (navigation retour)
+onActivated(resetForm);
 
 const goBack = () => {
   navigateTo("/events");
@@ -98,12 +112,8 @@ const handleCreate = async () => {
     // Délai minimum de 2 secondes pour afficher le loading
     const [room] = await Promise.all([
       (async () => {
-        // Mock participant - dans un vrai projet, ça viendrait du store user
-        const currentUser = {
-          id: '1',
-          name: 'Younes Boualam',
-          avatar: 'https://i.pravatar.cc/150?img=12',
-        };
+        // Récupère ou crée l'utilisateur actuel
+        const currentUser = getCurrentUser();
 
         return await createRoom(
           groupName.value,

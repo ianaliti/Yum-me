@@ -1,9 +1,9 @@
 import { roomManager } from '../utils/roomManager';
-import type { EventParticipant } from '~/types/event';
+import type { EventParticipant, ChatMessage } from '~/types/event';
 
 // Types pour les messages WebSocket
 interface WSMessage {
-  type: 'create' | 'join' | 'leave' | 'ping';
+  type: 'create' | 'join' | 'leave' | 'ping' | 'chat-message';
   data?: any;
 }
 
@@ -16,6 +16,11 @@ interface CreateRoomData {
 interface JoinRoomData {
   code: string;
   participant: EventParticipant;
+}
+
+interface ChatMessageData {
+  roomCode: string;
+  message: ChatMessage;
 }
 
 export default defineWebSocketHandler({
@@ -104,6 +109,36 @@ export default defineWebSocketHandler({
 
             console.log('[WebSocket] User left room:', result.code, 'user:', peer.id);
           }
+          break;
+        }
+
+        case 'chat-message': {
+          const data = msg.data as ChatMessageData;
+          const room = roomManager.getRoom(data.roomCode);
+
+          if (!room) {
+            peer.send(JSON.stringify({
+              type: 'error',
+              data: { message: 'Room not found' },
+            }));
+            return;
+          }
+
+          // Ajoute le message à la room
+          roomManager.addMessage(data.roomCode, data.message);
+
+          const messagePayload = JSON.stringify({
+            type: 'chat-message',
+            data: data.message,
+          });
+
+          // Envoie le message à l'émetteur aussi
+          peer.send(messagePayload);
+
+          // Diffuse le message aux autres participants
+          peer.publish(data.roomCode.toUpperCase(), messagePayload);
+
+          console.log('[WebSocket] Chat message sent to room:', data.roomCode, 'by:', data.message.participantName);
           break;
         }
 

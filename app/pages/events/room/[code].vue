@@ -48,26 +48,21 @@
             </button>
           </div>
 
-          <!-- Avatars stack -->
-          <div class="flex -space-x-3">
+          <!-- Chat Button -->
+          <button
+            @click="openChat"
+            class="relative flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2.5 rounded-2xl hover:bg-white/20 transition-colors"
+          >
+            <span class="text-base font-semibold">Chat</span>
+            <MessageCircle :size="18" />
+            <!-- Unread Badge (optional - for future) -->
             <div
-              v-for="(participant, index) in room.participants.slice(0, 3)"
-              :key="participant.id"
-              class="relative"
+              v-if="hasUnreadMessages"
+              class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold"
             >
-              <img
-                :src="participant.avatar"
-                :alt="participant.name"
-                class="w-10 h-10 rounded-full border-2 border-white object-cover"
-              />
+              {{ unreadCount }}
             </div>
-            <div
-              v-if="room.participants.length > 3"
-              class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white flex items-center justify-center text-xs font-semibold"
-            >
-              +{{ room.participants.length - 3 }}
-            </div>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -124,12 +119,25 @@
         Quitter l'événement
       </button>
     </div>
+
+    <!-- Chat Panel -->
+    <EventsChatPanel
+      v-if="room"
+      :open="isChatOpen"
+      :messages="room.messages || []"
+      :current-user-id="currentUser.id"
+      :participant-count="room.participants.length"
+      :connected="connected"
+      @update:open="isChatOpen = $event"
+      @send="handleSendMessage"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ChevronLeft, Copy, Check, Share2 } from "lucide-vue-next";
+import { ChevronLeft, Copy, Check, Share2, MessageCircle } from "lucide-vue-next";
 import { eventGroupColors } from "~/types/event";
+import EventsChatPanel from "~/components/events/ChatPanel.vue";
 
 definePageMeta({
   layout: "app",
@@ -142,8 +150,18 @@ useHead({
   title: () => `Événement ${code.value} - Yum'me`,
 });
 
-const { currentRoom: room, connected, disconnect } = useRoom();
+const { currentRoom: room, connected, disconnect, sendMessage } = useRoom();
+const { getCurrentUser } = useCurrentUser();
+
 const copied = ref(false);
+const isChatOpen = ref(false);
+
+// Récupère l'utilisateur actuel
+const currentUser = getCurrentUser();
+
+// Chat state (for future unread messages feature)
+const hasUnreadMessages = ref(false);
+const unreadCount = ref(0);
 
 // Fonction pour copier le code
 const copyCode = async () => {
@@ -181,6 +199,47 @@ const shareEvent = async () => {
     await copyCode();
   }
 };
+
+// Fonction pour ouvrir le chat
+const openChat = () => {
+  console.log('[Chat] Click sur bouton chat');
+  console.log('[Chat] Room:', room.value);
+  console.log('[Chat] Participants:', room.value?.participants.length);
+  console.log('[Chat] isChatOpen avant:', isChatOpen.value);
+
+  if (!room.value) {
+    console.log('[Chat] Pas de room - abandon');
+    return;
+  }
+
+  // Temporairement désactivé pour tester même avec 1 participant
+  // if (room.value.participants.length < 2) {
+  //   console.log('[Chat] Pas assez de participants - abandon');
+  //   return;
+  // }
+
+  isChatOpen.value = true;
+  console.log('[Chat] isChatOpen après:', isChatOpen.value);
+
+  // Reset unread messages when opening chat
+  hasUnreadMessages.value = false;
+  unreadCount.value = 0;
+};
+
+// Fonction pour envoyer un message
+const handleSendMessage = (content: string) => {
+  console.log('[Chat] Envoi message:', content);
+  sendMessage(content, currentUser);
+};
+
+// Watch pour debug
+watch(isChatOpen, (newValue) => {
+  console.log('[Room] isChatOpen changed to:', newValue);
+});
+
+watch(() => room.value?.participants.length, (newValue) => {
+  console.log('[Room] Participants count:', newValue);
+});
 
 // Fonction pour quitter l'événement
 const handleLeave = async () => {

@@ -1,4 +1,4 @@
-import type { EventGroup, EventParticipant } from '~/types/event';
+import type { EventGroup, EventParticipant, ChatMessage } from '~/types/event';
 
 export const useRoom = () => {
   // Utilise useState pour partager l'état entre les pages
@@ -88,6 +88,16 @@ export const useRoom = () => {
           currentRoom.value.participants = currentRoom.value.participants.filter(
             (p) => p.id !== message.data.participant.id
           );
+        }
+        break;
+
+      case 'chat-message':
+        if (currentRoom.value && message.data) {
+          // Ajoute le nouveau message à la liste
+          if (!currentRoom.value.messages) {
+            currentRoom.value.messages = [];
+          }
+          currentRoom.value.messages.push(message.data);
         }
         break;
 
@@ -217,6 +227,36 @@ export const useRoom = () => {
     }
   };
 
+  // Envoie un message dans le chat
+  const sendMessage = (content: string, participant: EventParticipant) => {
+    if (!ws.value || !connected.value) {
+      console.error('[WS Client] Not connected');
+      return;
+    }
+
+    if (!currentRoom.value) {
+      console.error('[WS Client] No active room');
+      return;
+    }
+
+    const chatMessage: ChatMessage = {
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      participantId: participant.id,
+      participantName: participant.name,
+      participantAvatar: participant.avatar,
+      content,
+      timestamp: new Date().toISOString(),
+    };
+
+    send({
+      type: 'chat-message',
+      data: {
+        roomCode: currentRoom.value.code,
+        message: chatMessage,
+      },
+    });
+  };
+
   // Déconnecte
   const disconnect = () => {
     if (ws.value) {
@@ -237,6 +277,7 @@ export const useRoom = () => {
     createRoom,
     joinRoom,
     leaveRoom,
+    sendMessage,
     disconnect,
   };
 };
