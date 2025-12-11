@@ -2,7 +2,7 @@
   <Sheet :open="isOpen" @update:open="handleOpenChange">
     <SheetContent
       side="bottom"
-      class="rounded-t-3xl h-[85vh] overflow-hidden p-0 border-0 bg-background flex flex-col"
+      class="rounded-t-3xl h-[75vh] overflow-hidden p-0 border-0 bg-background flex flex-col"
       :showClose="false"
     >
       <!-- Handle bar -->
@@ -14,7 +14,9 @@
       <div class="px-6 pb-4 border-b border-border flex-shrink-0">
         <h2 class="text-xl font-bold text-foreground">Chat</h2>
         <p class="text-sm text-muted-foreground mt-1">
-          {{ participantCount }} participant{{ participantCount > 1 ? 's' : '' }}
+          {{ participantCount }} participant{{
+            participantCount > 1 ? "s" : ""
+          }}
         </p>
       </div>
 
@@ -38,11 +40,11 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <path
+              d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+            />
           </svg>
-          <p class="text-muted-foreground">
-            Aucun message pour le moment
-          </p>
+          <p class="text-muted-foreground">Aucun message pour le moment</p>
           <p class="text-sm text-muted-foreground/70 mt-1">
             Soyez le premier à envoyer un message !
           </p>
@@ -58,22 +60,16 @@
       </div>
 
       <!-- Input -->
-      <EventsChatInput
-        :disabled="!connected"
-        @send="handleSendMessage"
-      />
+      <EventsChatInput :disabled="!connected" @send="handleSendMessage" />
     </SheetContent>
   </Sheet>
 </template>
 
 <script setup lang="ts">
-import {
-  Sheet,
-  SheetContent,
-} from '@/components/ui/sheet';
-import type { ChatMessage } from '~/types/event';
-import EventsChatMessage from './ChatMessage.vue';
-import EventsChatInput from './ChatInput.vue';
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import type { ChatMessage } from "~/types/event";
+import EventsChatMessage from "./ChatMessage.vue";
+import EventsChatInput from "./ChatInput.vue";
 
 interface Props {
   open: boolean;
@@ -84,8 +80,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update:open', value: boolean): void;
-  (e: 'send', content: string): void;
+  (e: "update:open", value: boolean): void;
+  (e: "send", content: string): void;
 }
 
 const props = defineProps<Props>();
@@ -95,44 +91,52 @@ const messagesContainer = ref<HTMLDivElement | null>(null);
 
 const isOpen = computed({
   get: () => {
-    console.log('[ChatPanel] isOpen get:', props.open);
+    console.log("[ChatPanel] isOpen get:", props.open);
     return props.open;
   },
   set: (value) => {
-    console.log('[ChatPanel] isOpen set:', value);
-    emit('update:open', value);
+    console.log("[ChatPanel] isOpen set:", value);
+    emit("update:open", value);
   },
 });
 
 const handleOpenChange = (value: boolean) => {
-  console.log('[ChatPanel] handleOpenChange:', value);
-  emit('update:open', value);
+  console.log("[ChatPanel] handleOpenChange:", value);
+  emit("update:open", value);
 };
 
 // Watch pour debug
-watch(() => props.open, (newValue) => {
-  console.log('[ChatPanel] props.open changed:', newValue);
-});
+watch(
+  () => props.open,
+  (newValue) => {
+    console.log("[ChatPanel] props.open changed:", newValue);
+  }
+);
 
 const handleSendMessage = (content: string) => {
-  emit('send', content);
+  emit("send", content);
 };
 
 // Auto-scroll to bottom when new messages arrive
-watch(() => props.messages.length, () => {
-  nextTick(() => {
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-    }
-  });
-});
+watch(
+  () => props.messages.length,
+  () => {
+    nextTick(() => {
+      if (messagesContainer.value) {
+        messagesContainer.value.scrollTop =
+          messagesContainer.value.scrollHeight;
+      }
+    });
+  }
+);
 
 // Scroll to bottom when panel opens
 watch(isOpen, (newValue) => {
   if (newValue) {
     nextTick(() => {
       if (messagesContainer.value) {
-        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+        messagesContainer.value.scrollTop =
+          messagesContainer.value.scrollHeight;
       }
     });
   }
