@@ -1,22 +1,26 @@
 <template>
   <div class="h-full flex flex-col w-full">
-    <!-- Content - Centered vertically -->
-    <div class="flex-1 flex flex-col items-center justify-center space-y-6">
-      <!-- Logo -->
-      <div class="w-28">
+    <!-- Logo - Fixed position at top -->
+    <div class="pt-10 flex justify-center shrink-0">
+      <div class="w-48 sm:w-52">
         <img
           src="/logo.svg"
           alt="Yum'me logo"
-          class="w-full h-full object-contain"
+          class="w-full h-auto object-contain"
+          loading="eager"
         />
       </div>
+    </div>
 
+    <!-- Content - Centered in remaining space -->
+    <div class="flex-1 flex flex-col items-center justify-center space-y-3">
       <!-- Main Illustration -->
-      <div class="w-68">
+      <div class="w-40 sm:w-60">
         <img
           src="/onboarding/4.svg"
           alt="Onboarding illustration"
-          class="w-full h-full object-contain"
+          class="w-full h-auto object-contain max-h-[22vh]"
+          loading="eager"
         />
       </div>
 

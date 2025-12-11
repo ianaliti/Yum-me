@@ -1,15 +1,12 @@
 <template>
   <div>
     <!-- Loading Screen -->
-    <OnboardingLoader
-      v-if="isLoadingLocation"
-      :is-ready="isLoadingComplete"
-    />
+    <OnboardingLoader v-if="isLoadingLocation" :is-ready="isLoadingComplete" />
 
     <!-- Onboarding Content -->
     <div
       v-else
-      class="h-screen flex flex-col relative overflow-hidden"
+      class="h-dvh flex flex-col relative overflow-hidden"
       :style="{
         backgroundImage: 'url(/pattern-bg.svg)',
         backgroundSize: 'cover',
@@ -17,12 +14,12 @@
       }"
     >
       <!-- Skip Button - Top Right (hidden on Step 1) -->
-      <div v-if="currentStep > 0" class="absolute top-6 right-6 z-10">
+      <div v-if="currentStep > 0" class="absolute top-4 right-4 z-10">
         <Button variant="ghost" @click="handleNextStep">Passer</Button>
       </div>
 
       <!-- Main Content -->
-      <div class="flex-1 overflow-y-auto overflow-x-hidden">
+      <div class="flex-1 overflow-hidden">
         <div class="h-full w-full flex flex-col px-6 max-w-2xl mx-auto">
           <!-- Dynamic Step Component with Transition -->
           <Transition
@@ -50,7 +47,7 @@
       >
         <div
           v-if="currentStep > 0"
-          class="absolute bottom-0 left-0 right-0 flex flex-col gap-4 px-6 pb-8 max-w-2xl mx-auto w-full"
+          class="absolute bottom-0 left-0 right-0 flex flex-col gap-4 px-6 pb-3 max-w-2xl mx-auto w-full"
         >
           <!-- Step Indicator -->
           <OnboardingStepIndicator
@@ -124,7 +121,9 @@ const handleNextStep = async () => {
   // Step 4 (index 3) - Check if we need to show geolocation step
   if (currentStep.value === 3) {
     try {
-      const permission = await navigator.permissions.query({ name: "geolocation" });
+      const permission = await navigator.permissions.query({
+        name: "geolocation",
+      });
 
       // If permission already granted, skip Step 5 and go directly to loader
       if (permission.state === "granted") {

@@ -1,28 +1,32 @@
 <template>
   <div class="h-full flex flex-col w-full">
-    <!-- Content - Centered vertically -->
-    <div class="flex-1 flex flex-col items-center justify-center space-y-8">
-      <!-- Logo -->
-      <div class="w-28">
+    <!-- Logo - Fixed position at top -->
+    <div class="pt-10 flex justify-center shrink-0">
+      <div class="w-48 sm:w-52">
         <img
           src="/logo.svg"
           alt="Yum'me logo"
-          class="w-full h-full object-contain"
+          class="w-full h-auto object-contain"
+          loading="eager"
         />
       </div>
+    </div>
 
+    <!-- Content - Centered in remaining space -->
+    <div class="flex-1 flex flex-col items-center justify-center space-y-4">
       <!-- Main Illustration -->
-      <div class="w-68">
+      <div class="w-60 sm:w-60">
         <img
           src="/onboarding/5.svg"
           alt="Onboarding illustration"
-          class="w-full h-full object-contain"
+          class="w-full h-auto object-contain max-h-[22vh]"
+          loading="eager"
         />
       </div>
 
       <!-- Title -->
       <div class="text-center space-y-2 max-w-md px-6">
-        <h2 class="text-2xl font-bold leading-relaxed">
+        <h2 class="text-xl font-bold leading-relaxed">
           <span class="text-secondary"
             >Pour te proposer les restaurants les plus proches,</span
           >

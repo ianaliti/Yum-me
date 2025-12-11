@@ -1,28 +1,31 @@
 <template>
   <div
-    class="h-screen flex flex-col relative overflow-hidden"
+    class="h-dvh flex flex-col relative overflow-hidden"
     :style="{
       backgroundImage: 'url(/pattern-bg.svg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }"
   >
-    <!-- Content wrapper with padding -->
-    <div class="flex-1 overflow-y-auto overflow-x-hidden">
+    <!-- Content wrapper -->
+    <div class="flex-1 overflow-hidden">
       <div class="h-full w-full flex flex-col px-6 max-w-2xl mx-auto">
-        <!-- Content - Centered vertically and horizontally -->
-        <div class="flex-1 flex flex-col items-center justify-center space-y-8">
-          <!-- Logo -->
-          <div class="w-60">
+        <!-- Logo - Fixed position at top -->
+        <div class="pt-10 flex justify-center shrink-0">
+          <div class="w-48 sm:w-52">
             <img
               src="/logo.svg"
               alt="Yum'me logo"
-              class="w-full h-full object-contain"
+              class="w-full h-auto object-contain"
+              loading="eager"
             />
           </div>
+        </div>
 
+        <!-- Content - Centered in remaining space -->
+        <div class="flex-1 flex flex-col items-center justify-center space-y-6">
           <!-- Mascotte with Animated Fill -->
-          <div class="w-90">
+          <div class="w-72 sm:w-80">
             <svg
               width="326"
               height="253"
@@ -232,56 +235,55 @@
             </svg>
           </div>
 
-          <!-- Loading Text wrapper (fixed height to prevent layout shift) -->
-          <div class="min-h-24 flex items-center justify-center">
-            <Transition
-              enter-active-class="transition-opacity duration-300"
-              enter-from-class="opacity-0"
-              enter-to-class="opacity-100"
-              leave-active-class="transition-opacity duration-300"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0"
+          <!-- Loading Text wrapper - Fixed height to prevent layout shift -->
+          <div class="min-h-20 flex items-center justify-center">
+            <div
+              class="text-center space-y-3 transition-opacity duration-300"
+              :class="isReady ? 'opacity-0' : 'opacity-100'"
             >
-              <div v-if="!isReady" class="text-center space-y-4">
-                <h2 class="text-xl font-bold text-secondary">
-                  Création de votre profil...
-                </h2>
+              <h2 class="text-lg sm:text-xl font-bold text-secondary">
+                Création de votre profil...
+              </h2>
 
-                <!-- Loading dots -->
-                <div class="flex space-x-2 justify-center">
-                  <div class="w-3 h-3 bg-primary rounded-full animate-bounce" />
-                  <div
-                    class="w-3 h-3 bg-primary rounded-full animate-bounce animation-delay-100"
-                  />
-                  <div
-                    class="w-3 h-3 bg-primary rounded-full animate-bounce animation-delay-200"
-                  />
-                </div>
+              <!-- Loading dots -->
+              <div class="flex space-x-2 justify-center">
+                <div class="w-3 h-3 bg-primary rounded-full animate-bounce" />
+                <div
+                  class="w-3 h-3 bg-primary rounded-full animate-bounce animation-delay-100"
+                />
+                <div
+                  class="w-3 h-3 bg-primary rounded-full animate-bounce animation-delay-200"
+                />
               </div>
-            </Transition>
+            </div>
           </div>
         </div>
 
-        <!-- Button wrapper (fixed height to prevent layout shift) -->
-        <div class="pb-8 w-full min-h-20">
-          <Transition
-            enter-active-class="transition-all duration-300 ease-out"
-            enter-from-class="opacity-0 translate-y-8"
-            enter-to-class="opacity-100 translate-y-0"
-          >
-            <Button
-              v-if="isReady"
-              size="xl"
-              variant="secondary"
-              class="w-full"
-              @click="navigateTo('/accueil')"
-            >
-              Accéder à la plateforme
-            </Button>
-          </Transition>
-        </div>
+        <!-- Spacer for absolute button -->
+        <div class="pb-24" />
       </div>
     </div>
+
+    <!-- Button - Absolute at bottom -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 translate-y-8"
+      enter-to-class="opacity-100 translate-y-0"
+    >
+      <div
+        v-if="isReady"
+        class="absolute bottom-0 left-0 right-0 px-6 pb-6 max-w-2xl mx-auto w-full"
+      >
+        <Button
+          size="xl"
+          variant="secondary"
+          class="w-full"
+          @click="navigateTo('/accueil')"
+        >
+          Accéder à la plateforme
+        </Button>
+      </div>
+    </Transition>
   </div>
 </template>
 

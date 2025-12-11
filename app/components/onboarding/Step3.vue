@@ -1,34 +1,38 @@
 <template>
   <div class="h-full flex flex-col w-full">
-    <!-- Content - Centered vertically -->
-    <div class="flex-1 flex flex-col items-center justify-center space-y-6">
-      <!-- Logo -->
-      <div class="w-28">
+    <!-- Logo - Fixed position at top -->
+    <div class="pt-10 flex justify-center flex-shrink-0">
+      <div class="w-48 sm:w-52">
         <img
           src="/logo.svg"
           alt="Yum'me logo"
-          class="w-full h-full object-contain"
+          class="w-full h-auto object-contain"
+          loading="eager"
         />
       </div>
+    </div>
 
+    <!-- Content - Centered in remaining space -->
+    <div class="flex-1 flex flex-col items-center justify-center space-y-3">
       <!-- Main Illustration -->
-      <div class="w-68">
+      <div class="w-52 sm:w-60">
         <img
           src="/onboarding/3.svg"
           alt="Onboarding illustration"
-          class="w-full h-full object-contain"
+          class="w-full h-auto object-contain max-h-[22vh]"
+          loading="eager"
         />
       </div>
 
       <!-- Title -->
       <div class="text-center space-y-2 max-w-md px-6">
-        <h2 class="text-2xl font-bold text-secondary">
+        <h2 class="text-xl font-bold text-secondary">
           Dis-nous ce que tu manges, on s'occupe du reste !
         </h2>
       </div>
 
       <!-- Selectable Tags -->
-      <div class="flex flex-wrap gap-3 justify-center max-w-md px-6">
+      <div class="flex flex-wrap gap-3 justify-center max-w-md">
         <OnboardingSelectableBadge
           v-for="tag in dietTags"
           :key="tag"

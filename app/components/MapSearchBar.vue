@@ -1,7 +1,7 @@
 <template>
   <div class="w-full px-4">
     <div
-      class="bg-white rounded-full shadow-lg border border-border flex items-center gap-3 px-4 py-3 transition-all"
+      class="bg-white rounded-full shadow-lg border border-border flex items-center gap-2 pl-4 pr-2 py-2.5 transition-all"
     >
       <!-- Search Icon -->
       <Search class="w-5 h-5 text-muted-foreground flex-shrink-0" />
@@ -13,7 +13,7 @@
         type="text"
         :placeholder="placeholder"
         :autofocus="autofocus"
-        class="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
+        class="flex-1 bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground min-w-0"
         @focus="handleFocus"
         @blur="handleBlur"
         @input="handleInput"
@@ -21,10 +21,10 @@
       />
 
       <!-- Filter Icons -->
-      <div class="flex items-center gap-2 flex-shrink-0">
+      <div class="flex items-center gap-1 flex-shrink-0">
         <button
           v-if="showFilters"
-          class="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+          class="p-2 hover:bg-gray-100 rounded-full transition-colors"
           @click="handleFilterClick"
         >
           <SlidersHorizontal class="w-5 h-5 text-muted-foreground" />
@@ -32,7 +32,7 @@
 
         <button
           v-if="showSettings"
-          class="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+          class="p-2 hover:bg-gray-100 rounded-full transition-colors"
           @click="handleSettingsClick"
         >
           <Settings class="w-5 h-5 text-muted-foreground" />
@@ -54,7 +54,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: "Rechercher un plat, restaurant, etc.",
+  placeholder: "Rechercher un plat, etc.",
   showFilters: true,
   showSettings: false,
   modelValue: "",

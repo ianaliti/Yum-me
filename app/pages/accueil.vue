@@ -4,9 +4,9 @@
     <AppHeader />
 
     <!-- Search Bar -->
-    <div class="px-4 pb-4">
+    <div class="pb-4">
       <MapSearchBar
-        placeholder="Rechercher un plat, restaurant, etc."
+        placeholder="Rechercher un plat, etc."
         :show-filters="true"
         :show-settings="false"
         @focus="navigateToRestaurants"
