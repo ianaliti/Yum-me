@@ -359,9 +359,25 @@ const handleCloseRoute = () => {
 };
 
 // Handler pour le bouton de géolocalisation
-const handleGeolocateClick = () => {
-  if (mapInstance.value) {
-    activateGeolocateControl(mapInstance.value);
+const handleGeolocateClick = async () => {
+  const debugStore = useGeolocationDebugStore();
+
+  debugStore.info('🔵 Click sur bouton géolocalisation');
+
+  // IMPORTANT: Appeler getUserPosition(true) directement depuis le click handler
+  // pour respecter le user gesture requis par Safari iOS
+  const result = await geolocationStore.getUserPosition(true);
+
+  if (result.success && mapInstance.value) {
+    debugStore.success('✅ Position obtenue → Déplacement de la map');
+    // Déplacer la map vers la nouvelle position
+    mapInstance.value.flyTo({
+      center: geolocationStore.center,
+      zoom: 15,
+      duration: 1500,
+    });
+  } else {
+    debugStore.error('❌ Échec géolocalisation depuis bouton', { error: result.error });
   }
 };
 
@@ -389,13 +405,11 @@ watch(selectedRestaurant, (newRestaurant, oldRestaurant) => {
   }
 });
 
-// Demander la position au chargement
+// Charger les données au montage
+// NOTE: On ne demande PAS la géolocalisation ici car ce n'est pas un user gesture
+// L'utilisateur devra cliquer sur le bouton de géolocalisation
 onMounted(async () => {
-  // Charger les données depuis le cache ou l'API
-  await Promise.all([
-    geolocationStore.getUserPosition(),
-    restaurantStore.fetchRestaurants(),
-  ]);
+  await restaurantStore.fetchRestaurants();
 });
 
 useHead({
