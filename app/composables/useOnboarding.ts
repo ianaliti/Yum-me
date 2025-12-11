@@ -73,6 +73,10 @@ export const useOnboarding = () => {
   };
 
   const completeOnboarding = async () => {
+    const debugStore = useGeolocationDebugStore();
+
+    debugStore.info('🚀 Début completeOnboarding (click bouton Step 5)');
+
     isLoadingLocation.value = true;
     isLoadingComplete.value = false;
 
@@ -87,14 +91,19 @@ export const useOnboarding = () => {
       // IMPORTANT: Sur iOS/Safari, getUserPosition() DOIT être appelé directement
       // depuis un event handler de click, pas dans une Promise.all()
       // On appelle donc getUserPosition() de manière synchrone ici
+      debugStore.info('📞 Appel getUserPosition(true) DEPUIS click handler');
+
       const geolocationPromise = geolocationStore.getUserPosition(true);
       const restaurantsPromise = restaurantStore.fetchRestaurants();
 
       // Attendre les deux en parallèle
+      debugStore.info('⏳ Attente résultats...');
       const [geoResult] = await Promise.all([
         geolocationPromise,
         restaurantsPromise,
       ]);
+
+      debugStore.info('📊 Résultat géolocalisation', geoResult);
 
       // Attendre au minimum 2 secondes depuis le début
       const elapsedTime = Date.now() - startTime;
@@ -105,10 +114,17 @@ export const useOnboarding = () => {
       }
 
       // Si la géolocalisation a échoué, on continue quand même avec Annecy par défaut
-      if (!geoResult.success && geoResult.error === 'permission_denied') {
-        console.warn('Géolocalisation refusée, utilisation de la position par défaut (Annecy)');
+      if (!geoResult.success) {
+        if (geoResult.error === 'permission_denied') {
+          debugStore.warning('⚠️ Permission refusée → Utilisation position par défaut (Annecy)');
+        } else {
+          debugStore.warning(`⚠️ Erreur géoloc (${geoResult.error}) → Position par défaut`);
+        }
+      } else {
+        debugStore.success('✅ Onboarding terminé avec succès !');
       }
     } catch (error) {
+      debugStore.error('❌ Erreur dans completeOnboarding', error);
       console.error("Error preloading data:", error);
     }
 

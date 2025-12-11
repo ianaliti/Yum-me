@@ -73,27 +73,56 @@ export const useGeolocationStore = defineStore('geolocation', {
     },
 
     async getUserPosition(force = false) {
+      const debugStore = useGeolocationDebugStore();
+
+      debugStore.info('🎯 getUserPosition appelé', { force, isCacheValid: this.isCacheValid, mapReady: this.mapReady });
+
+      // Vérifier le contexte sécurisé
+      if (process.client) {
+        const isSecureContext = window.isSecureContext;
+        const protocol = window.location.protocol;
+        debugStore.info('🔒 Contexte de sécurité', {
+          isSecureContext,
+          protocol,
+          host: window.location.host
+        });
+
+        if (!isSecureContext && !window.location.host.includes('localhost')) {
+          debugStore.error('❌ Contexte non sécurisé (HTTPS requis)');
+          this.error = 'Secure context required';
+          this.mapReady = true;
+          this.loading = false;
+          return { success: false, error: 'not_secure' };
+        }
+      }
+
       // Si le cache est valide et qu'on ne force pas, on ne recharge pas
       if (!force && this.isCacheValid && this.mapReady) {
+        debugStore.success('✅ Position depuis cache (valide)', { center: this.center });
         return { success: true, fromCache: true };
       }
 
       // Essayer de charger depuis le cache d'abord
       if (!force && this.loadFromCache()) {
+        debugStore.success('✅ Position chargée depuis cache', { center: this.center });
         return { success: true, fromCache: true };
       }
 
+      debugStore.info('📍 Demande de nouvelle position...');
       this.loading = true;
       this.error = null;
 
       return new Promise<{ success: boolean; error?: string }>((resolve) => {
         if (!navigator.geolocation) {
+          debugStore.error('❌ navigator.geolocation non disponible');
           this.error = 'Geolocation not supported';
           this.mapReady = true;
           this.loading = false;
           resolve({ success: false, error: 'not_supported' });
           return;
         }
+
+        debugStore.info('🔄 Démarrage de watchPosition...');
 
         let watchId: number | null = null;
         let bestAccuracy = Infinity;
@@ -130,10 +159,19 @@ export const useGeolocationStore = defineStore('geolocation', {
         // Utiliser watchPosition pour meilleure précision sur mobile
         watchId = navigator.geolocation.watchPosition(
           (position) => {
+            const debugStore = useGeolocationDebugStore();
+            debugStore.info('📡 Position reçue', {
+              accuracy: position.coords.accuracy.toFixed(1) + 'm',
+              lat: position.coords.latitude.toFixed(6),
+              lng: position.coords.longitude.toFixed(6),
+              timestamp: new Date(position.timestamp).toLocaleTimeString()
+            });
+
             // Garder la position la plus précise
             if (position.coords.accuracy < bestAccuracy) {
               bestAccuracy = position.coords.accuracy;
               bestPosition = position;
+              debugStore.info(`✨ Meilleure précision: ${bestAccuracy.toFixed(1)}m`);
 
               // Si on a une précision acceptable (< 50m), on peut résoudre rapidement
               if (position.coords.accuracy < 50 && !hasResolved) {
@@ -149,28 +187,46 @@ export const useGeolocationStore = defineStore('geolocation', {
                 this.mapReady = true;
                 this.loading = false;
                 this.saveToCache();
+                debugStore.success('✅ Position obtenue avec précision < 50m', {
+                  accuracy: position.coords.accuracy.toFixed(1) + 'm',
+                  center: this.center
+                });
                 resolve({ success: true });
               }
             }
           },
           (error) => {
+            const debugStore = useGeolocationDebugStore();
+
             if (watchId !== null) {
               navigator.geolocation.clearWatch(watchId);
             }
             clearTimeout(timeoutId);
             if (!hasResolved) {
               hasResolved = true;
-              console.warn('Géolocalisation refusée:', error);
 
               // Déterminer le type d'erreur
               let errorType = 'unknown';
+              let errorMessage = '';
+
               if (error.code === error.PERMISSION_DENIED) {
                 errorType = 'permission_denied';
+                errorMessage = '❌ Permission refusée par l\'utilisateur';
               } else if (error.code === error.POSITION_UNAVAILABLE) {
                 errorType = 'unavailable';
+                errorMessage = '❌ Position indisponible (GPS/réseau)';
               } else if (error.code === error.TIMEOUT) {
                 errorType = 'timeout';
+                errorMessage = '⏱️ Timeout de géolocalisation';
+              } else {
+                errorMessage = `❌ Erreur inconnue: ${error.message}`;
               }
+
+              debugStore.error(errorMessage, {
+                code: error.code,
+                message: error.message,
+                type: errorType
+              });
 
               this.error = error.message;
               this.mapReady = true;

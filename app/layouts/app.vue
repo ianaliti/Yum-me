@@ -10,6 +10,9 @@
 
     <!-- Toaster -->
     <Toaster position="top-center" />
+
+    <!-- Debug Panel (visible seulement si activé) -->
+    <DebugGeolocationDebug />
   </div>
 </template>
 
