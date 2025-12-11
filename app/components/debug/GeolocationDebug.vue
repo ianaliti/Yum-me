@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="debugStore.visible"
+    v-if="debugStore.visible && isDev"
     class="fixed top-0 left-0 right-0 z-[9999] bg-black/95 text-white p-4 max-h-[50vh] overflow-y-auto text-xs font-mono"
   >
     <!-- Header -->
@@ -75,7 +75,7 @@
 
   <!-- Toggle button (always visible) -->
   <button
-    v-if="!debugStore.visible"
+    v-if="!debugStore.visible && isDev"
     @click="debugStore.toggleVisibility()"
     class="fixed top-4 right-4 z-[9998] bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg font-bold"
   >
@@ -86,6 +86,7 @@
 <script setup lang="ts">
 const debugStore = useGeolocationDebugStore();
 const copied = ref(false);
+const isDev = process.dev;
 
 const protocol = computed(() => process.client ? window.location.protocol : '');
 const host = computed(() => process.client ? window.location.host : '');

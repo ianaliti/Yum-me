@@ -360,24 +360,17 @@ const handleCloseRoute = () => {
 
 // Handler pour le bouton de géolocalisation
 const handleGeolocateClick = async () => {
-  const debugStore = useGeolocationDebugStore();
-
-  debugStore.info('🔵 Click sur bouton géolocalisation');
-
   // IMPORTANT: Appeler getUserPosition(true) directement depuis le click handler
   // pour respecter le user gesture requis par Safari iOS
   const result = await geolocationStore.getUserPosition(true);
 
   if (result.success && mapInstance.value) {
-    debugStore.success('✅ Position obtenue → Déplacement de la map');
     // Déplacer la map vers la nouvelle position
     mapInstance.value.flyTo({
       center: geolocationStore.center,
       zoom: 15,
       duration: 1500,
     });
-  } else {
-    debugStore.error('❌ Échec géolocalisation depuis bouton', { error: result.error });
   }
 };
 
