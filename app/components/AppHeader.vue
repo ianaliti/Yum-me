@@ -42,6 +42,7 @@
 
 <script setup lang="ts">
 import { ChevronDown } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 import IconMap from "@/components/icons/IconMap.vue";
 import IconNotification from "@/components/icons/IconNotification.vue";
 
@@ -56,12 +57,14 @@ const displayLocation = computed(() => {
 const hasNotifications = ref(true); // TODO: Connecter au système de notifications
 
 const handleLocationClick = () => {
-  // TODO: Ouvrir un modal/bottom sheet pour changer la location
-  console.log("Location clicked");
+  toast("Fonctionnalité non disponible", {
+    description: "Le changement de localisation sera bientôt disponible.",
+  });
 };
 
 const handleNotificationClick = () => {
-  // TODO: Naviguer vers la page des notifications
-  console.log("Notification clicked");
+  toast("Fonctionnalité non disponible", {
+    description: "Les notifications seront bientôt disponibles.",
+  });
 };
 </script>

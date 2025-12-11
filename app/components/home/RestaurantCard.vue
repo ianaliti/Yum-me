@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue-sonner";
 import type { Restaurant } from "@/types/restaurant";
 
 interface Props {
@@ -46,7 +47,8 @@ const distance = computed(() => {
 });
 
 const handleClick = () => {
-  // TODO: Naviguer vers la page de détail du restaurant ou ouvrir la bottom sheet
-  console.log("Restaurant clicked:", props.restaurant.id);
+  toast("Fonctionnalité non disponible", {
+    description: "Les détails des restaurants seront bientôt disponibles.",
+  });
 };
 </script>

@@ -24,8 +24,11 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue-sonner";
+
 const handleFindRestaurant = () => {
-  // Naviguer vers la page restaurants
-  navigateTo("/restaurants");
+  toast("Fonctionnalité non disponible", {
+    description: "La recherche avancée de restaurants sera bientôt disponible.",
+  });
 };
 </script>

@@ -24,14 +24,25 @@ export const useCurrentUser = () => {
   };
 
   const getCurrentUser = (): EventParticipant => {
+    // Si l'utilisateur en cache a un nom qui commence par "Invité", on le remplace par Younes
+    if (currentUser.value && currentUser.value.name.startsWith('Invité')) {
+      const defaultUser: EventParticipant = {
+        id: '1',
+        name: 'Younes',
+        avatar: 'https://i.pravatar.cc/150?img=12',
+      };
+      setCurrentUser(defaultUser);
+      return defaultUser;
+    }
+
     if (currentUser.value) {
       return currentUser.value;
     }
 
-    // Si pas d'utilisateur, on crée un utilisateur par défaut
+    // Si pas d'utilisateur, on crée Younes par défaut (utilisateur principal de l'app)
     const defaultUser: EventParticipant = {
       id: '1',
-      name: 'Younes Boualam',
+      name: 'Younes',
       avatar: 'https://i.pravatar.cc/150?img=12',
     };
 

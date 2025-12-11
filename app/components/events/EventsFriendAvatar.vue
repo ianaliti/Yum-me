@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue-sonner";
 import type { Friend } from "~/types/event";
 
 interface Props {
@@ -29,7 +30,8 @@ interface Props {
 const props = defineProps<Props>();
 
 const handleClick = () => {
-  // TODO: Naviguer vers le profil de l'ami
-  console.log("Ami cliqué:", props.friend.name);
+  toast("Fonctionnalité non disponible", {
+    description: "Le profil des amis sera bientôt disponible.",
+  });
 };
 </script>

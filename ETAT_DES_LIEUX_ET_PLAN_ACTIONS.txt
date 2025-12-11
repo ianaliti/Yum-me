@@ -1,0 +1,23 @@
+ÉTAT DES LIEUX ET PLAN D'ACTIONS - YUM'ME
+
+ÉTAT DES LIEUX :
+
+Nous avons développé un MVP fonctionnel en 1 semaine avec les fonctionnalités clés : onboarding personnalisé, carte interactive Mapbox avec recherche intelligente, calcul d'itinéraires, et système d'événements de groupe en temps réel via WebSockets.
+
+Ce que nous avons appris : L'importance de la stack technique adaptée (Nuxt/Vue pour la rapidité, Mapbox pour la personnalisation des cartes) et le choix d'hébergement (migration Vercel → Railway pour supporter les WebSockets). Les données mockées nous ont permis de nous concentrer sur l'UX sans perdre de temps sur l'infrastructure backend.
+
+Pivots effectués : Passage de Vercel à Railway pour l'hébergement suite à l'incompatibilité des WebSockets natifs avec les fonctions serverless. Ajustements responsive suite aux tests utilisateurs (bottom sheet, interface mobile).
+
+Ce dont nous avons besoin : Tester le MVP avec de vrais utilisateurs pour valider l'intérêt du concept, collecter leurs retours sur l'expérience utilisateur et les fonctionnalités prioritaires. Besoin d'accompagnement sur la stratégie de test utilisateur et les métriques à suivre pour valider le product-market fit.
+
+PLAN D'ACTIONS (DEV) :
+
+1. Migration base de données (priorité 1) : Remplacer les données mockées par MongoDB + Mongoose. Créer les schémas (User, Restaurant, Event) avec support GeoJSON pour les requêtes géospatiales. Adapter la couche de services existante pour se connecter à MongoDB Atlas.
+
+2. Migration React Native (priorité 2) : Développer l'application mobile native iOS/Android en React Native, qui est l'objectif final du projet. Réutiliser la logique métier du MVP Nuxt (stores, composables, services). Intégrer React Native Maps pour remplacer Mapbox GL JS et adapter les composants UI pour mobile.
+
+3. Authentification & Sécurité : Implémenter le système d'authentification JWT pour l'app mobile avec middleware de vérification, hashage bcrypt des mots de passe, endpoints user (register, login, profile). Assurer HTTPS et chiffrement des données sensibles.
+
+4. Complétion des endpoints API : Développer les endpoints manquants (POST/PUT/DELETE restaurants, gestion complète des events avec invitations/acceptations, système de matching de restaurants selon préférences combinées du groupe).
+
+5. Tests & Architecture microservices : Mettre en place la suite de tests (unitaires, intégration, E2E) et pipeline CI/CD. Préparer l'architecture microservices (isoler User/Restaurant/Event), implémenter les notifications push mobiles et optimiser les performances WebSocket pour l'app native.

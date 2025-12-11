@@ -105,9 +105,18 @@ const handleJoin = async () => {
           .substr(2, 9)}`;
         const randomAvatar = Math.floor(Math.random() * 70) + 1;
 
+        // Liste de prénoms aléatoires
+        const randomNames = [
+          "Younes", "Jeremy", "Loan", "Maurine", "Marie",
+          "Lucas", "Emma", "Nathan", "Léa", "Hugo",
+          "Chloé", "Arthur", "Camille", "Louis", "Sarah",
+          "Gabriel", "Jade", "Théo", "Zoé", "Tom"
+        ];
+        const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+
         const newUser = {
           id: userId,
-          name: `Invité ${userId.slice(-4)}`,
+          name: randomName,
           avatar: `https://i.pravatar.cc/150?img=${randomAvatar}`,
         };
 

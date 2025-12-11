@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue-sonner";
 import { Gift } from "lucide-vue-next";
 import type { EventGroup } from "~/types/event";
 import { eventGroupColors } from "~/types/event";
@@ -78,7 +79,8 @@ const colorClass = computed(() => {
 });
 
 const handleClick = () => {
-  // TODO: Naviguer vers le détail du groupe
-  console.log("Groupe cliqué:", props.group.title);
+  toast("Fonctionnalité non disponible", {
+    description: "Les détails des événements seront bientôt disponibles.",
+  });
 };
 </script>

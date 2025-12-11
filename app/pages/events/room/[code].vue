@@ -52,7 +52,7 @@
               @click="copyCode"
               class="text-white/80 hover:text-white transition-colors"
             >
-              <Check v-if="copied" :size="18" class="text-green-400" />
+              <Check v-if="copied" :size="18" />
               <Copy v-else :size="18" />
             </button>
           </div>
@@ -199,21 +199,37 @@ const copyCode = async () => {
 const shareEvent = async () => {
   if (!room.value) return;
 
-  const shareText = `Rejoignez mon événement "${room.value.title}" avec le code: ${room.value.code}`;
+  const shareUrl = 'https://yumee-production.up.railway.app/events';
+  const shareText = `Rejoignez mon événement "${room.value.title}" avec le code: ${room.value.code}\n\n${shareUrl}`;
 
   if (navigator.share) {
     try {
       await navigator.share({
-        title: room.value.title,
         text: shareText,
       });
     } catch (err) {
-      // Fallback: copie le code
-      await copyCode();
+      // Fallback: copie le texte complet
+      try {
+        await navigator.clipboard.writeText(shareText);
+        copied.value = true;
+        setTimeout(() => {
+          copied.value = false;
+        }, 2000);
+      } catch (clipboardErr) {
+        console.error("Failed to copy:", clipboardErr);
+      }
     }
   } else {
-    // Fallback: copie le code
-    await copyCode();
+    // Fallback: copie le texte complet
+    try {
+      await navigator.clipboard.writeText(shareText);
+      copied.value = true;
+      setTimeout(() => {
+        copied.value = false;
+      }, 2000);
+    } catch (clipboardErr) {
+      console.error("Failed to copy:", clipboardErr);
+    }
   }
 };
 

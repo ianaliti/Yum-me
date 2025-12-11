@@ -16,6 +16,7 @@
     <button
       class="relative p-2 hover:opacity-80 transition-opacity"
       aria-label="Notifications"
+      @click="handleNotificationClick"
     >
       <IconNotification :size="24" color="#003459" />
 
@@ -29,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from 'vue-sonner';
 import IconNotification from '@/components/icons/IconNotification.vue';
 import type { User } from '~/types/event';
 
@@ -37,4 +39,10 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const handleNotificationClick = () => {
+  toast("Fonctionnalité non disponible", {
+    description: "Les notifications seront bientôt disponibles.",
+  });
+};
 </script>

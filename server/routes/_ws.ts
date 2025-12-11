@@ -67,7 +67,7 @@ export default defineWebSocketHandler({
           if (!room) {
             peer.send(JSON.stringify({
               type: 'error',
-              data: { message: 'Room not found' },
+              data: { message: 'Événement introuvable' },
             }));
             return;
           }
@@ -119,7 +119,7 @@ export default defineWebSocketHandler({
           if (!room) {
             peer.send(JSON.stringify({
               type: 'error',
-              data: { message: 'Room not found' },
+              data: { message: 'Événement introuvable' },
             }));
             return;
           }

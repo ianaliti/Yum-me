@@ -44,6 +44,8 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue-sonner";
+
 interface Props {
   currentSlide?: number;
   totalSlides?: number;
@@ -55,7 +57,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const handleSubscribe = () => {
-  // TODO: Naviguer vers la page d'abonnement
-  console.log("Subscribe clicked");
+  toast("Fonctionnalité non disponible", {
+    description: "L'abonnement premium sera bientôt disponible.",
+  });
 };
 </script>

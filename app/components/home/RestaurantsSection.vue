@@ -28,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue-sonner";
+
 const restaurantStore = useRestaurantStore();
 
 const restaurants = computed(() => {
@@ -36,8 +38,9 @@ const restaurants = computed(() => {
 });
 
 const handleSeeAll = () => {
-  // TODO: Naviguer vers la page avec tous les restaurants
-  navigateTo("/restaurants");
+  toast("Fonctionnalité non disponible", {
+    description: "La liste complète des restaurants sera bientôt disponible.",
+  });
 };
 </script>
 

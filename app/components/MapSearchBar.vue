@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { Search, SlidersHorizontal, Settings } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
 interface Props {
   placeholder?: string;
@@ -90,6 +91,9 @@ const handleInput = () => {
 };
 
 const handleFilterClick = () => {
+  toast("Fonctionnalité non disponible", {
+    description: "Les filtres avancés seront bientôt disponibles.",
+  });
   emit("filter");
 };
 
