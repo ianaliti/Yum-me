@@ -84,10 +84,16 @@ export const useOnboarding = () => {
     const restaurantStore = useRestaurantStore();
 
     try {
-      // Lancer la géolocalisation et le chargement des restaurants en parallèle
-      await Promise.all([
-        geolocationStore.getUserPosition(),
-        restaurantStore.fetchRestaurants(),
+      // IMPORTANT: Sur iOS/Safari, getUserPosition() DOIT être appelé directement
+      // depuis un event handler de click, pas dans une Promise.all()
+      // On appelle donc getUserPosition() de manière synchrone ici
+      const geolocationPromise = geolocationStore.getUserPosition(true);
+      const restaurantsPromise = restaurantStore.fetchRestaurants();
+
+      // Attendre les deux en parallèle
+      const [geoResult] = await Promise.all([
+        geolocationPromise,
+        restaurantsPromise,
       ]);
 
       // Attendre au minimum 2 secondes depuis le début
@@ -96,6 +102,11 @@ export const useOnboarding = () => {
 
       if (remainingTime > 0) {
         await new Promise((resolve) => setTimeout(resolve, remainingTime));
+      }
+
+      // Si la géolocalisation a échoué, on continue quand même avec Annecy par défaut
+      if (!geoResult.success && geoResult.error === 'permission_denied') {
+        console.warn('Géolocalisation refusée, utilisation de la position par défaut (Annecy)');
       }
     } catch (error) {
       console.error("Error preloading data:", error);

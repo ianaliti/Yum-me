@@ -89,6 +89,7 @@ const {
   goToStep,
   skipOnboarding,
   nextStep,
+  completeOnboarding,
 } = useOnboarding();
 
 // Disable button if on step 3 or 4 and no tags selected
@@ -120,36 +121,19 @@ const currentStepComponent = computed(() => stepComponents[currentStep.value]);
 const handleNextStep = async () => {
   // Step 4 (index 3) - Check if we need to show geolocation step
   if (currentStep.value === 3) {
-    try {
-      const permission = await navigator.permissions.query({
-        name: "geolocation",
-      });
-
-      // If permission already granted, skip Step 5 and go directly to loader
-      if (permission.state === "granted") {
-        console.log("Geolocation already granted, skipping Step 5...");
-        nextStep(); // Go to Step 5
-        nextStep(); // Skip Step 5 immediately and go to loader
-        return;
-      }
-    } catch (error) {
-      console.error("Error checking geolocation permission:", error);
-      // If permission API not supported, show Step 5 normally
-    }
+    // Note: On ne vérifie plus navigator.permissions.query car Safari a des bugs
+    // On affiche toujours Step 5 pour demander la localisation proprement
+    nextStep();
+    return;
   }
 
-  // Step 5 (index 4) - Request geolocation
+  // Step 5 (index 4) - Activer la localisation
   if (currentStep.value === 4) {
-    try {
-      const position = await new Promise<GeolocationPosition>(
-        (resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        }
-      );
-      console.log("Location granted:", position.coords);
-    } catch (error) {
-      console.error("Location permission denied:", error);
-    }
+    // IMPORTANT: On appelle completeOnboarding() directement ici
+    // Cela déclenche la géolocalisation immédiatement au click du bouton
+    // C'est crucial pour iOS/Safari qui requiert un user gesture
+    await completeOnboarding();
+    return;
   }
 
   // Go to next step

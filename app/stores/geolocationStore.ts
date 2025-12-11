@@ -75,49 +75,115 @@ export const useGeolocationStore = defineStore('geolocation', {
     async getUserPosition(force = false) {
       // Si le cache est valide et qu'on ne force pas, on ne recharge pas
       if (!force && this.isCacheValid && this.mapReady) {
-        return;
+        return { success: true, fromCache: true };
       }
 
       // Essayer de charger depuis le cache d'abord
       if (!force && this.loadFromCache()) {
-        return;
+        return { success: true, fromCache: true };
       }
 
       this.loading = true;
       this.error = null;
 
-      return new Promise<void>((resolve) => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              this.center = [
-                position.coords.longitude,
-                position.coords.latitude,
-              ];
-              this.mapReady = true;
-              this.loading = false;
-              this.saveToCache();
-              resolve();
-            },
-            (error) => {
-              console.warn('Géolocalisation refusée:', error);
-              this.error = error.message;
-              this.mapReady = true;
-              this.loading = false;
-              resolve();
-            },
-            {
-              enableHighAccuracy: true,
-              timeout: 5000,
-              maximumAge: 0,
-            }
-          );
-        } else {
+      return new Promise<{ success: boolean; error?: string }>((resolve) => {
+        if (!navigator.geolocation) {
           this.error = 'Geolocation not supported';
           this.mapReady = true;
           this.loading = false;
-          resolve();
+          resolve({ success: false, error: 'not_supported' });
+          return;
         }
+
+        let watchId: number | null = null;
+        let bestAccuracy = Infinity;
+        let bestPosition: GeolocationPosition | null = null;
+        let hasResolved = false;
+
+        // Timeout plus long pour mobile (15 secondes)
+        const timeoutId = setTimeout(() => {
+          if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+          }
+          if (!hasResolved) {
+            hasResolved = true;
+            if (bestPosition) {
+              // On a au moins une position, même si pas la meilleure
+              this.center = [
+                bestPosition.coords.longitude,
+                bestPosition.coords.latitude,
+              ];
+              this.mapReady = true;
+              this.saveToCache();
+              this.loading = false;
+              resolve({ success: true });
+            } else {
+              // Aucune position obtenue
+              this.error = 'Timeout';
+              this.mapReady = true;
+              this.loading = false;
+              resolve({ success: false, error: 'timeout' });
+            }
+          }
+        }, 15000);
+
+        // Utiliser watchPosition pour meilleure précision sur mobile
+        watchId = navigator.geolocation.watchPosition(
+          (position) => {
+            // Garder la position la plus précise
+            if (position.coords.accuracy < bestAccuracy) {
+              bestAccuracy = position.coords.accuracy;
+              bestPosition = position;
+
+              // Si on a une précision acceptable (< 50m), on peut résoudre rapidement
+              if (position.coords.accuracy < 50 && !hasResolved) {
+                hasResolved = true;
+                clearTimeout(timeoutId);
+                if (watchId !== null) {
+                  navigator.geolocation.clearWatch(watchId);
+                }
+                this.center = [
+                  position.coords.longitude,
+                  position.coords.latitude,
+                ];
+                this.mapReady = true;
+                this.loading = false;
+                this.saveToCache();
+                resolve({ success: true });
+              }
+            }
+          },
+          (error) => {
+            if (watchId !== null) {
+              navigator.geolocation.clearWatch(watchId);
+            }
+            clearTimeout(timeoutId);
+            if (!hasResolved) {
+              hasResolved = true;
+              console.warn('Géolocalisation refusée:', error);
+
+              // Déterminer le type d'erreur
+              let errorType = 'unknown';
+              if (error.code === error.PERMISSION_DENIED) {
+                errorType = 'permission_denied';
+              } else if (error.code === error.POSITION_UNAVAILABLE) {
+                errorType = 'unavailable';
+              } else if (error.code === error.TIMEOUT) {
+                errorType = 'timeout';
+              }
+
+              this.error = error.message;
+              this.mapReady = true;
+              this.loading = false;
+              resolve({ success: false, error: errorType });
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0,
+          }
+        );
       });
     },
 
