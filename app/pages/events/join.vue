@@ -16,10 +16,10 @@
       <!-- Title & Description -->
       <div class="space-y-2">
         <h1 class="text-2xl font-bold text-secondary leading-tight">
-          Rejoins avec le code de groupe
+          Rejoins le groupe avec le code
         </h1>
         <p class="text-sm text-muted-foreground">
-          Assurez-vous que le code que vous avez saisi est correct.
+          Assure-toi que le code que tu as saisi est correct.
         </p>
       </div>
 
@@ -28,7 +28,7 @@
         <Input
           v-model="groupCode"
           type="text"
-          placeholder="Entrez le code du groupe"
+          placeholder="Entre le code du groupe"
           class="h-14 text-base bg-muted/30 border-2 border-border rounded-2xl placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-accent uppercase"
           @keyup.enter="handleJoin"
         />
@@ -100,7 +100,9 @@ const handleJoin = async () => {
     const [room] = await Promise.all([
       (async () => {
         // Génère un utilisateur unique pour chaque personne qui rejoint
-        const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const userId = `user_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`;
         const randomAvatar = Math.floor(Math.random() * 70) + 1;
 
         const newUser = {
@@ -114,7 +116,7 @@ const handleJoin = async () => {
 
         return await joinRoom(groupCode.value, newUser);
       })(),
-      new Promise(resolve => setTimeout(resolve, 2000))
+      new Promise((resolve) => setTimeout(resolve, 2000)),
     ]);
 
     if (room) {
@@ -127,7 +129,10 @@ const handleJoin = async () => {
     }
   } catch (error) {
     console.error("Error joining room:", error);
-    errorMessage.value = error instanceof Error ? error.message : "Erreur lors de la connexion à l'événement";
+    errorMessage.value =
+      error instanceof Error
+        ? error.message
+        : "Erreur lors de la connexion à l'événement";
     joining.value = false;
   }
 };

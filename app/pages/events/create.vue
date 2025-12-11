@@ -16,7 +16,7 @@
       <!-- Title -->
       <div>
         <h1 class="text-2xl font-bold text-secondary leading-tight">
-          Veuillez renseigner les informations concernant votre groupe.
+          Renseigne les informations concernant ton groupe
         </h1>
       </div>
 
@@ -121,7 +121,7 @@ const handleCreate = async () => {
           currentUser
         );
       })(),
-      new Promise(resolve => setTimeout(resolve, 2000))
+      new Promise((resolve) => setTimeout(resolve, 2000)),
     ]);
 
     if (room) {

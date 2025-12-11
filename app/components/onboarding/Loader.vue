@@ -242,7 +242,7 @@
               :class="isReady ? 'opacity-0' : 'opacity-100'"
             >
               <h2 class="text-lg sm:text-xl font-bold text-secondary">
-                Création de votre profil...
+                Création de ton profil...
               </h2>
 
               <!-- Loading dots -->

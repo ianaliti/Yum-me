@@ -6,12 +6,12 @@
       :showClose="false"
     >
       <!-- Handle bar -->
-      <div class="flex justify-center pt-4 pb-2 flex-shrink-0">
+      <div class="flex justify-center pt-4 pb-2 shrink-0">
         <div class="w-16 h-1.5 bg-muted-foreground/30 rounded-full" />
       </div>
 
       <!-- Header -->
-      <div class="px-6 pb-4 border-b border-border flex-shrink-0">
+      <div class="px-6 pb-4 border-b border-border shrink-0">
         <h2 class="text-xl font-bold text-foreground">Chat</h2>
         <p class="text-sm text-muted-foreground mt-1">
           {{ participantCount }} participant{{

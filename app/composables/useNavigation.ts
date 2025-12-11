@@ -17,7 +17,7 @@ export const useNavigation = () => {
     },
     {
       name: "restaurants",
-      label: "Restaurants",
+      label: "Carte",
       icon: "IconRestaurant",
       path: "/restaurants",
     },
@@ -29,7 +29,7 @@ export const useNavigation = () => {
     },
     {
       name: "profile",
-      label: "Profile",
+      label: "Profil",
       icon: "IconUser",
       path: "/profile",
     },

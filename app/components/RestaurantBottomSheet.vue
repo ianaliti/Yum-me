@@ -89,7 +89,7 @@
             <!-- Dietary Options -->
             <div v-if="selectedRestaurant.dietaryOptions.length" class="mt-8">
               <h3 class="text-sm font-semibold mb-2">
-                Restrictions alimentaires
+                Compatibilité avec ton régime
               </h3>
               <div class="flex flex-wrap gap-1.5">
                 <Badge
@@ -147,7 +147,9 @@ const isLoading = ref(false);
 // Inject map instance, searchQuery et fonctions markers depuis la page restaurants.vue
 const mapInstance = inject<Ref<any>>("mapInstance");
 const searchQuery = inject<Ref<string>>("searchQuery");
-const hideAllMarkersExcept = inject<(restaurantId: string) => void>("hideAllMarkersExcept");
+const hideAllMarkersExcept = inject<(restaurantId: string) => void>(
+  "hideAllMarkersExcept"
+);
 const showAllMarkers = inject<() => void>("showAllMarkers");
 
 // Vérifier si la position utilisateur est réelle (pas la position par défaut)

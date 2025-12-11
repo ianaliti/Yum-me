@@ -17,30 +17,34 @@ export const useOnboarding = () => {
     "is-loading-complete",
     () => false
   );
-  const dietaryPreferences = useState<string[]>("dietary-preferences", () => []);
+  const dietaryPreferences = useState<string[]>(
+    "dietary-preferences",
+    () => []
+  );
   const specialNeeds = useState<string[]>("special-needs", () => []);
 
   const steps: OnboardingStep[] = [
     {
       title: "Bienvenue sur Yum'me !",
       description:
-        "L'app qui trouve instantanément les restaurants adaptés à ton alimentation.",
+        "L’app qui permet de manger ensemble sans compromis, partout et pour tous.",
     },
     {
       title: "Marre de chercher un restaurant ?",
       description:
-        "Qui respecte tes habitudes alimentaires ? Yum'me le trouve pour toi. Simplement.",
+        "Qui respecte tes besoins spécifiques ?  Yum’me le trouve pour toi. Simplement.",
     },
     {
       title: "Dis-nous ce que tu manges, on s'occupe du reste !",
       description: "",
     },
     {
-      title: "Dites-nous en plus sur vos besoins particuliers",
+      title: "Dites-nous en plus sur tes besoins particuliers",
       description: "",
     },
     {
-      title: "Pour te proposer les restaurants les plus proches, Yum'me a besoin d'accéder à ta position.",
+      title:
+        "Pour te proposer les restaurants les plus proches, Yum'me a besoin d'accéder à ta position.",
       description: "",
     },
   ];

@@ -15,7 +15,9 @@
     <!-- Loading State -->
     <div v-if="!room" class="flex-1 flex items-center justify-center">
       <div class="text-center space-y-4">
-        <div class="animate-spin rounded-full h-12 w-12 border-2 border-primary border-t-transparent mx-auto" />
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-2 border-primary border-t-transparent mx-auto"
+        />
         <p class="text-sm text-muted-foreground">Connexion à l'événement...</p>
       </div>
     </div>
@@ -40,9 +42,16 @@
         <!-- Bottom section: Code + Avatars -->
         <div class="flex items-center justify-between">
           <!-- Code with copy icon -->
-          <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2.5 rounded-2xl">
-            <span class="text-lg font-bold tracking-wider">{{ room.code }}</span>
-            <button @click="copyCode" class="text-white/80 hover:text-white transition-colors">
+          <div
+            class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2.5 rounded-2xl"
+          >
+            <span class="text-lg font-bold tracking-wider">{{
+              room.code
+            }}</span>
+            <button
+              @click="copyCode"
+              class="text-white/80 hover:text-white transition-colors"
+            >
               <Check v-if="copied" :size="18" class="text-green-400" />
               <Copy v-else :size="18" />
             </button>
@@ -80,7 +89,9 @@
               :alt="participant.name"
               class="w-14 h-14 rounded-full object-cover"
             />
-            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-background rounded-full" />
+            <div
+              class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-background rounded-full"
+            />
           </div>
 
           <!-- Name -->
@@ -108,7 +119,7 @@
         class="w-full h-16 text-lg font-bold bg-background text-secondary hover:bg-background hover:opacity-80 border-2 border-secondary rounded-full shadow-lg transition-opacity flex items-center justify-center gap-2"
       >
         <Share2 :size="20" />
-        Partagez avec vos amis
+        Partage avec tes amis
       </button>
 
       <!-- Quit Button -->
@@ -135,7 +146,13 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronLeft, Copy, Check, Share2, MessageCircle } from "lucide-vue-next";
+import {
+  ChevronLeft,
+  Copy,
+  Check,
+  Share2,
+  MessageCircle,
+} from "lucide-vue-next";
 import { eventGroupColors } from "~/types/event";
 import EventsChatPanel from "~/components/events/ChatPanel.vue";
 
@@ -202,13 +219,13 @@ const shareEvent = async () => {
 
 // Fonction pour ouvrir le chat
 const openChat = () => {
-  console.log('[Chat] Click sur bouton chat');
-  console.log('[Chat] Room:', room.value);
-  console.log('[Chat] Participants:', room.value?.participants.length);
-  console.log('[Chat] isChatOpen avant:', isChatOpen.value);
+  console.log("[Chat] Click sur bouton chat");
+  console.log("[Chat] Room:", room.value);
+  console.log("[Chat] Participants:", room.value?.participants.length);
+  console.log("[Chat] isChatOpen avant:", isChatOpen.value);
 
   if (!room.value) {
-    console.log('[Chat] Pas de room - abandon');
+    console.log("[Chat] Pas de room - abandon");
     return;
   }
 
@@ -219,7 +236,7 @@ const openChat = () => {
   // }
 
   isChatOpen.value = true;
-  console.log('[Chat] isChatOpen après:', isChatOpen.value);
+  console.log("[Chat] isChatOpen après:", isChatOpen.value);
 
   // Reset unread messages when opening chat
   hasUnreadMessages.value = false;
@@ -228,18 +245,21 @@ const openChat = () => {
 
 // Fonction pour envoyer un message
 const handleSendMessage = (content: string) => {
-  console.log('[Chat] Envoi message:', content);
+  console.log("[Chat] Envoi message:", content);
   sendMessage(content, currentUser);
 };
 
 // Watch pour debug
 watch(isChatOpen, (newValue) => {
-  console.log('[Room] isChatOpen changed to:', newValue);
+  console.log("[Room] isChatOpen changed to:", newValue);
 });
 
-watch(() => room.value?.participants.length, (newValue) => {
-  console.log('[Room] Participants count:', newValue);
-});
+watch(
+  () => room.value?.participants.length,
+  (newValue) => {
+    console.log("[Room] Participants count:", newValue);
+  }
+);
 
 // Fonction pour quitter l'événement
 const handleLeave = async () => {
