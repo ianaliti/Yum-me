@@ -69,7 +69,7 @@
         :distance="formattedDistance"
         :duration="formattedDuration"
         :visible="true"
-        class="absolute bottom-24 left-4 z-10"
+        class="absolute bottom-28 left-4 z-10"
       />
 
       <!-- Bouton fermer route à droite -->
@@ -84,7 +84,7 @@
         <button
           v-if="activeRoute"
           @click="handleCloseRoute"
-          class="absolute bottom-24 right-4 z-10 bg-white shadow-lg rounded-full p-3 border border-border hover:bg-muted transition-colors"
+          class="absolute bottom-28 right-4 z-10 bg-white shadow-lg rounded-full p-3 border border-border hover:bg-muted transition-colors"
           aria-label="Fermer l'itinéraire"
         >
           <XIcon class="w-5 h-5 text-primary" />
